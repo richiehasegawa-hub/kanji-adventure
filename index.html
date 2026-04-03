@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ものがたり漢字アドベンチャー</title>
+<style>
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue:    #3A6EA8;
+  --blue-light: #EBF3FB;
+  --blue-dark:  #1A4A7A;
+  --orange:  #F5A623;
+  --orange-light: #FFF8F0;
+  --green:   #4CAF50;
+  --green-light: #E8F5E9;
+  --red:     #E57373;
+  --parchment: #FDF6E3;
+  --gray-1:  #F5F5F5;
+  --gray-2:  #E0E0E0;
+  --gray-3:  #9E9E9E;
+  --text:    #2D2D2D;
+  --text-light: #666;
+  --white:   #FFFFFF;
+  --shadow:  0 2px 12px rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.18);
+  --radius:  16px;
+  --radius-sm: 10px;
+}
+html, body {
+  height: 100%; width: 100%;
+  font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', 'Yu Gothic', sans-serif;
+  font-size: 16px; color: var(--text);
+  background: var(--gray-1); overflow-x: hidden;
+}
+button { cursor: pointer; border: none; font-family: inherit; }
+input  { font-family: inherit; }
+
+/* ===================== LAYOUT ===================== */
+#app { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Screen container: max 480px centered */
+.screen {
+  display: none; flex-direction: column;
+  min-height: 100vh; width: 100%; max-width: 480px;
+  margin: 0 auto; background: var(--white); position: relative;
+}
+.screen.active { display: flex; }
+
+/* Page-wide PC layout for parent */
+.screen.parent-wide { max-width: 1200px; }
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--white);
+  border-bottom: 2px solid var(--blue-light);
+  position: sticky; top: 0; z-index: 100; gap: 8px;
+}
+.header-title {
+  font-size: 15px; font-weight: 700; color: var(--blue);
+  flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.btn-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--blue-light); color: var(--blue);
+  font-size: 18px; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .2s;
+}
+.btn-icon:hover { background: var(--gray-2); }
+.btn-icon.invisible { visibility: hidden; }
+
+/* Progress bar */
+.progress-bar-wrap {
+  height: 6px; background: var(--gray-2); width: 100%;
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--blue), var(--orange));
+  border-radius: 3px; transition: width .4s ease;
+}
+
+/* Scrollable content */
+.content { flex: 1; overflow-y: auto; padding: 16px; }
+.content.no-pad { padding: 0; }
+
+/* ===================== BUTTONS ===================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 24px; border-radius: var(--radius);
+  font-size: 16px; font-weight: 700; transition: all .2s;
+  width: 100%; gap: 8px;
+}
+.btn-primary {
+  background: var(--blue); color: var(--white);
+  box-shadow: 0 4px 0 var(--blue-dark);
+}
+.btn-primary:hover { transform: translateY(-1px); background: var(--blue-dark); }
+.btn-primary:active { transform: translateY(2px); box-shadow: none; }
+.btn-orange {
+  background: var(--orange); color: var(--white);
+  box-shadow: 0 4px 0 #C47F0E;
+}
+.btn-orange:hover { transform: translateY(-1px); }
+.btn-orange:active { transform: translateY(2px); box-shadow: none; }
+.btn-ghost {
+  background: transparent; color: var(--blue);
+  border: 2px solid var(--blue);
+}
+.btn-ghost:hover { background: var(--blue-light); }
+.btn-sm { padding: 10px 20px; font-size: 14px; }
+.btn-gap { margin-top: 10px; }
+
+/* ===================== CARDS ===================== */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px;
+}
+.card-blue { background: var(--blue-light); border-left: 4px solid var(--blue); }
+.card-orange { background: var(--orange-light); border-left: 4px solid var(--orange); }
+.card-parchment { background: var(--parchment); border: 1px solid #E8D9A0; }
+
+/* ===================== WELCOME SCREEN ===================== */
+#screen-welcome {
+  background: linear-gradient(160deg, #1A4A7A 0%, #3A6EA8 60%, #5A9EE8 100%);
+  justify-content: center; align-items: center; text-align: center; padding: 32px 24px;
+}
+.welcome-logo { font-size: 56px; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.welcome-title {
+  font-size: 22px; font-weight: 900; color: var(--white);
+  text-shadow: 0 2px 8px rgba(0,0,0,.3); margin-bottom: 4px; line-height: 1.3;
+}
+.welcome-sub { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 32px; }
+.welcome-form { width: 100%; max-width: 320px; }
+.welcome-input {
+  width: 100%; padding: 14px 18px; border-radius: var(--radius);
+  border: 2px solid transparent; font-size: 17px; text-align: center;
+  background: rgba(255,255,255,.95); margin-bottom: 14px; outline: none;
+}
+.welcome-input:focus { border-color: var(--orange); }
+.welcome-hint { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 16px; }
+
+/* ===================== HOME SCREEN ===================== */
+#screen-home .home-header {
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+  color: var(--white); padding: 16px 16px 24px;
+}
+.home-greeting { font-size: 13px; opacity: .85; }
+.home-name { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,.2); padding: 6px 12px;
+  border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px;
+}
+.home-map-title {
+  font-size: 13px; font-weight: 700; color: var(--gray-3);
+  text-transform: uppercase; letter-spacing: .5px;
+  padding: 16px 16px 8px; text-align: center;
+}
+.area-card {
+  margin: 0 16px 12px; border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
+  transition: transform .2s, box-shadow .2s; position: relative;
+}
+.area-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.area-card.locked { opacity: .6; cursor: not-allowed; }
+.area-header {
+  padding: 16px; display: flex; align-items: center; gap: 12px;
+}
+.area-emoji { font-size: 32px; }
+.area-info { flex: 1; }
+.area-name { font-size: 17px; font-weight: 800; color: var(--white); }
+.area-sub  { font-size: 12px; color: rgba(255,255,255,.8); margin-top: 2px; }
+.area-lock { font-size: 22px; }
+.area-stars { padding: 10px 16px; background: rgba(255,255,255,.15); }
+.star-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+.ep-pip {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+}
+.ep-pip.done { background: var(--orange); color: var(--white); }
+.ep-pip.open { background: rgba(255,255,255,.3); color: var(--white); }
+.ep-pip.lock { background: rgba(0,0,0,.2); color: rgba(255,255,255,.5); }
+.area-machi  .area-header { background: linear-gradient(135deg,#2C6FBF,#4A9ED4); }
+.area-machi  .area-stars  { background: rgba(44,111,191,.15); }
+.area-koujou .area-header { background: linear-gradient(135deg,#2E7D32,#4CAF50); }
+.area-koujou .area-stars  { background: rgba(46,125,50,.15); }
+.area-tegami .area-header { background: linear-gradient(135deg,#7B1FA2,#AB47BC); }
+.area-tegami .area-stars  { background: rgba(123,31,162,.15); }
+
+/* ===================== EPISODE LIST SCREEN ===================== */
+.ep-card {
+  margin-bottom: 12px; border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
+  transition: transform .2s;
+}
+.ep-card:hover:not(.locked) { transform: translateY(-2px); }
+.ep-card.locked { opacity: .55; cursor: not-allowed; }
+.ep-card-inner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: var(--white);
+}
+.ep-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: var(--white); flex-shrink: 0;
+}
+.ep-card-info { flex: 1; }
+.ep-card-title { font-size: 15px; font-weight: 700; }
+.ep-card-kanji { font-size: 13px; color: var(--gray-3); margin-top: 3px; }
+.ep-card-meta { font-size: 12px; color: var(--gray-3); margin-top: 3px; }
+.ep-badge {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 20px; flex-shrink: 0;
+}
+.ep-badge.done  { background: var(--green-light); color: var(--green); }
+.ep-badge.open  { background: var(--blue-light);  color: var(--blue);  }
+.ep-badge.lock  { background: var(--gray-1); color: var(--gray-3); }
+
+/* ===================== STORY SCREEN ===================== */
+.story-page {
+  min-height: 100%; display: flex; flex-direction: column; background: var(--parchment);
+}
+.story-illustration {
+  width: 100%; aspect-ratio: 16/9; background: var(--blue-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px; flex-shrink: 0;
+}
+.story-text-wrap {
+  flex: 1; padding: 20px; font-size: 18px; line-height: 1.9;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+.story-text-wrap .kanji-tap {
+  color: var(--blue); text-decoration: underline;
+  text-decoration-style: dotted; cursor: pointer; font-weight: 700;
+  padding: 0 2px;
+}
+.story-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--white);
+  border-top: 1px solid var(--gray-2); gap: 10px;
+}
+.page-dots { display: flex; gap: 6px; align-items: center; }
+.page-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--gray-2);
+  transition: background .2s;
+}
+.page-dot.active { background: var(--blue); width: 16px; border-radius: 4px; }
+.audio-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 20px;
+  background: var(--blue-light); color: var(--blue);
+  font-size: 13px; font-weight: 700; border: none;
+}
+
+/* ===================== KANJI CARD (BOTTOM SHEET) ===================== */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 200; display: none; align-items: flex-end;
+}
+.overlay.open { display: flex; animation: fadeIn .2s; }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+.bottom-sheet {
+  width: 100%; max-width: 480px; margin: 0 auto;
+  background: var(--white); border-radius: var(--radius) var(--radius) 0 0;
+  padding: 12px 20px 32px; animation: slideUp .25s ease;
+  max-height: 85vh; overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+.sheet-handle {
+  width: 36px; height: 4px; background: var(--gray-2);
+  border-radius: 2px; margin: 0 auto 16px;
+}
+.kanji-big {
+  font-size: 72px; font-weight: 900; text-align: center;
+  color: var(--blue-dark); line-height: 1; margin-bottom: 4px;
+}
+.kanji-reading {
+  text-align: center; font-size: 16px; color: var(--gray-3); margin-bottom: 16px;
+}
+.kanji-examples { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.kanji-ex-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; background: var(--gray-1); border-radius: var(--radius-sm);
+}
+.kanji-ex-emoji { font-size: 24px; flex-shrink: 0; }
+.kanji-ex-text { font-size: 16px; font-weight: 700; }
+.kanji-ex-reading { font-size: 13px; color: var(--gray-3); }
+.kanji-context {
+  font-size: 14px; color: var(--text-light); padding: 10px 14px;
+  background: var(--parchment); border-radius: var(--radius-sm);
+  margin-bottom: 16px; font-style: italic;
+}
+
+/* ===================== QUIZ SCREEN ===================== */
+.quiz-question {
+  font-size: 20px; font-weight: 700; text-align: center;
+  padding: 24px 16px; line-height: 1.5;
+}
+.quiz-kanji-big {
+  font-size: 80px; text-align: center; color: var(--blue-dark);
+  margin: 8px 0 24px; font-weight: 900; line-height: 1;
+}
+.quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+.choice-btn {
+  padding: 18px 12px; border-radius: var(--radius);
+  font-size: 18px; font-weight: 700; border: 2px solid var(--gray-2);
+  background: var(--white); color: var(--text);
+  transition: all .15s; min-height: 64px;
+}
+.choice-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-light); }
+.choice-btn.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+.choice-btn.wrong   { border-color: var(--red); background: #FFEBEE; color: var(--red); }
+.choice-btn:disabled { cursor: not-allowed; }
+.quiz-feedback {
+  margin: 16px 16px 0; padding: 14px; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 700; text-align: center;
+}
+.quiz-feedback.correct-fb { background: var(--green-light); color: var(--green); }
+.quiz-feedback.wrong-fb   { background: #FFEBEE; color: var(--red); }
+.quiz-counter { text-align: center; font-size: 13px; color: var(--gray-3); padding: 12px 0; }
+
+/* ===================== STROKE ORDER SCREEN ===================== */
+.stroke-screen { padding: 20px 16px; text-align: center; }
+.stroke-kanji-title {
+  font-size: 64px; font-weight: 900; color: var(--blue-dark);
+  margin-bottom: 8px; line-height: 1;
+}
+.stroke-svg-wrap {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gray-1); border-radius: var(--radius);
+  padding: 20px; margin: 12px 0;
+}
+.stroke-hint {
+  background: var(--blue-light); border-radius: var(--radius-sm);
+  padding: 14px; margin: 12px 0; text-align: left;
+  font-size: 14px; line-height: 1.8; color: var(--blue-dark);
+}
+.stroke-hint strong { font-size: 15px; display: block; margin-bottom: 4px; }
+.stroke-examples { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.stroke-ex-pill {
+  background: var(--white); border: 1px solid var(--blue-light);
+  border-radius: 20px; padding: 6px 14px; font-size: 15px; font-weight: 700;
+}
+.kanji-nav-dots { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+.kanji-nav-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: var(--gray-2);
+}
+.kanji-nav-dot.active { background: var(--blue); }
+
+/* ===================== HANDWRITING MISSION ===================== */
+.hw-card {
+  background: var(--parchment); border: 2px solid #D4C07A;
+  border-radius: var(--radius); padding: 24px; text-align: center;
+  margin-bottom: 16px;
+}
+.hw-target {
+  font-size: 48px; font-weight: 900; color: var(--blue-dark);
+  margin: 12px 0; letter-spacing: 8px;
+}
+.hw-reading { font-size: 16px; color: var(--gray-3); margin-bottom: 8px; }
+.hw-mission-text { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.hw-emoji { font-size: 48px; margin: 8px 0; }
+.stage-selector { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.stage-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  border: 2px solid var(--gray-2); background: var(--white);
+  font-size: 15px; transition: all .2s; text-align: left;
+}
+.stage-btn.selected { border-color: var(--blue); background: var(--blue-light); }
+.stage-icon { font-size: 20px; flex-shrink: 0; }
+.stage-info { flex: 1; }
+.stage-name { font-weight: 700; }
+.stage-desc { font-size: 12px; color: var(--gray-3); margin-top: 2px; }
+.nazori-preview {
+  position: relative; display: inline-block;
+  margin: 12px auto; text-align: center;
+}
+.nazori-char {
+  font-size: 80px; font-weight: 900; color: rgba(58,110,168,.15);
+  letter-spacing: 8px;
+}
+
+/* ===================== COMPLETE SCREEN ===================== */
+.complete-screen { text-align: center; padding: 32px 20px; }
+.complete-emoji { font-size: 80px; margin-bottom: 12px; animation: pop .4s cubic-bezier(.36,.07,.19,.97); }
+@keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+.complete-title { font-size: 26px; font-weight: 900; color: var(--blue-dark); margin-bottom: 8px; }
+.complete-sub { font-size: 14px; color: var(--gray-3); margin-bottom: 24px; }
+.learned-kanji { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+.learned-kanji-char {
+  width: 56px; height: 56px; border-radius: 12px;
+  background: var(--blue); color: var(--white);
+  font-size: 26px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+  animation: pop .4s cubic-bezier(.36,.07,.19,.97) backwards;
+}
+.notebook-added {
+  background: var(--orange-light); border: 2px solid var(--orange);
+  border-radius: var(--radius-sm); padding: 14px; margin: 16px 0;
+  font-size: 15px; font-weight: 700;
+}
+.stars-row { display: flex; justify-content: center; gap: 6px; margin: 12px 0; font-size: 32px; }
+
+/* ===================== KANJI NOTEBOOK ===================== */
+.kanji-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px;
+}
+.kanji-grid-item {
+  aspect-ratio: 1; border-radius: var(--radius-sm);
+  background: var(--blue-light); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer;
+  transition: transform .15s; border: 2px solid transparent;
+}
+.kanji-grid-item:hover { transform: scale(1.05); border-color: var(--blue); }
+.kanji-grid-char { font-size: 28px; font-weight: 900; color: var(--blue-dark); }
+.kanji-grid-read { font-size: 10px; color: var(--gray-3); margin-top: 2px; }
+.kanji-grid-badge { font-size: 14px; margin-top: 2px; }
+.notebook-count {
+  text-align: center; padding: 16px; font-size: 22px;
+  font-weight: 800; color: var(--blue-dark);
+}
+.notebook-count span { font-size: 13px; color: var(--gray-3); display: block; font-weight: 400; }
+.filter-tabs { display: flex; gap: 6px; padding: 0 16px 12px; overflow-x: auto; }
+.filter-tab {
+  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; font-weight: 700; border: 2px solid var(--gray-2);
+  background: var(--white); color: var(--gray-3); cursor: pointer;
+}
+.filter-tab.active { border-color: var(--blue); background: var(--blue); color: var(--white); }
+
+/* ===================== PARENT DASHBOARD ===================== */
+#screen-parent { max-width: 900px; background: var(--gray-1); }
+.parent-nav {
+  background: var(--blue-dark); color: var(--white);
+  padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+}
+.parent-nav-title { font-size: 16px; font-weight: 800; }
+.parent-tabs { display: flex; gap: 4px; padding: 12px 12px 0; background: var(--white); }
+.parent-tab {
+  padding: 10px 16px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  border: 2px solid var(--gray-2); border-bottom: none;
+  background: var(--gray-1); color: var(--gray-3);
+}
+.parent-tab.active { background: var(--white); color: var(--blue); border-color: var(--blue); }
+.parent-content { padding: 20px; }
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--white); border-radius: var(--radius); padding: 16px;
+  box-shadow: var(--shadow); text-align: center;
+}
+.stat-num { font-size: 32px; font-weight: 900; color: var(--blue); }
+.stat-label { font-size: 12px; color: var(--gray-3); margin-top: 4px; }
+.section-title { font-size: 14px; font-weight: 700; color: var(--gray-3); margin: 20px 0 10px; }
+.kanji-list-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--white);
+  border-radius: var(--radius-sm); margin-bottom: 6px; box-shadow: var(--shadow);
+}
+.kanji-list-char { font-size: 28px; font-weight: 900; color: var(--blue-dark); width: 40px; }
+.kanji-list-info { flex: 1; }
+.kanji-list-word { font-size: 14px; font-weight: 700; }
+.kanji-list-read { font-size: 12px; color: var(--gray-3); }
+.kanji-list-status { font-size: 20px; }
+.hint-card {
+  background: linear-gradient(135deg, var(--orange-light), #FFF3E0);
+  border: 2px solid var(--orange); border-radius: var(--radius);
+  padding: 16px; margin-top: 16px;
+}
+.hint-card-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+.hint-card-text { font-size: 14px; line-height: 1.7; }
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+  margin-bottom: 16px;
+}
+.cal-day-label { font-size: 11px; text-align: center; color: var(--gray-3); padding: 4px 0; }
+.cal-day {
+  aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray-3);
+  background: var(--gray-1);
+}
+.cal-day.studied { background: var(--blue); color: var(--white); }
+.cal-day.today { outline: 2px solid var(--orange); }
+
+/* ===================== TOAST ===================== */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--text); color: var(--white); padding: 12px 24px;
+  border-radius: 24px; font-size: 14px; font-weight: 700;
+  z-index: 999; opacity: 0; transition: opacity .3s;
+  white-space: nowrap; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* ===================== UTILITIES ===================== */
+.mt-4  { margin-top: 4px; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8  { margin-bottom: 8px; }
+.text-center { text-align: center; }
+.text-small  { font-size: 13px; color: var(--gray-3); }
+.bold { font-weight: 700; }
+.section-label {
+  font-size: 12px; font-weight: 700; color: var(--gray-3);
+  text-transform: uppercase; letter-spacing: .5px; padding: 0 0 8px;
+}
+.divider { height: 1px; background: var(--gray-2); margin: 16px 0; }
+hr { border: none; height: 1px; background: var(--gray-2); margin: 12px 0; }
+ruby rt { font-size: 0.55em; }
+
+/* SVG stroke animation */
+.stroke-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+.stroke-path.animate { animation: draw 1s ease forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ==================== WELCOME ==================== -->
+<div id="screen-welcome" class="screen active">
+  <div style="max-width:360px;width:100%;text-align:center;">
+    <div class="welcome-logo">🧱</div>
+    <div class="welcome-title">ものがたり<br>漢字アドベンチャー</div>
+    <div class="welcome-sub">かんじたんていになろう！</div>
+    <div class="welcome-form">
+      <input class="welcome-input" id="child-name-input" type="text"
+        placeholder="なまえをいれてね" maxlength="10" autocomplete="off">
+      <button class="btn btn-orange" onclick="startApp()">はじめる ▶</button>
+    </div>
+    <p class="welcome-hint">保護者の方へ：学習記録はこのデバイスに保存されます</p>
+  </div>
+</div>
+
+<!-- ==================== HOME ==================== -->
+<div id="screen-home" class="screen">
+  <div class="home-header">
+    <div class="home-greeting">こんにちは、</div>
+    <div class="home-name" id="home-name">りくたんてい</div>
+    <div id="streak-badge" class="streak-badge" style="display:none">
+      🔥 <span id="streak-num">1</span>日連続！
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0;">
+    <div class="home-map-title" style="padding:0">🗺️ 冒険マップ</div>
+    <button class="btn-icon" onclick="showScreen('screen-notebook')" title="かんじノート">📔</button>
+  </div>
+  <div class="content no-pad" style="padding-top:8px;padding-bottom:80px;">
+    <div id="area-list"></div>
+  </div>
+  <div style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+    background:var(--white);border-top:1px solid var(--gray-2);padding:10px 16px;display:flex;gap:8px;z-index:50;">
+    <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showScreen('screen-notebook')">📔 かんじノート</button>
+    <button class="btn btn-ghost btn-sm" style="flex:1" onclick="showScreen('screen-parent')">👩 ほごしゃ</button>
+  </div>
+</div>
+
+<!-- ==================== EPISODE LIST ==================== -->
+<div id="screen-episodes" class="screen">
+  <div class="header">
+    <button class="btn-icon" onclick="showScreen('screen-home')">←</button>
+    <div class="header-title" id="ep-list-title">まち探検</div>
+    <div class="btn-icon invisible">×</div>
+  </div>
+  <div class="content" id="ep-list-content"></div>
+</div>
+
+<!-- ==================== STORY ==================== -->
+<div id="screen-story" class="screen">
+  <div class="header">
+    <button class="btn-icon" onclick="confirmLeaveStory()">←</button>
+    <div class="header-title" id="story-title"></div>
+    <div class="btn-icon invisible">×</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="story-progress" style="width:0%"></div>
+  </div>
+  <div class="content no-pad" style="flex:1;overflow:hidden;">
+    <div class="story-page" id="story-page-content" style="min-height:100%;"></div>
+  </div>
+  <div class="story-nav" id="story-nav">
+    <button class="audio-btn" id="story-audio-btn" onclick="playStoryAudio()">🔊 読む</button>
+    <div class="page-dots" id="story-page-dots"></div>
+    <button class="btn btn-primary" style="width:auto;padding:12px 20px;font-size:15px;" id="story-next-btn" onclick="storyNext()">つぎへ ▶</button>
+  </div>
+</div>
+
+<!-- ==================== QUIZ ==================== -->
+<div id="screen-quiz" class="screen">
+  <div class="header">
+    <div class="btn-icon invisible">←</div>
+    <div class="header-title">理解ミッション</div>
+    <button class="btn-icon" style="font-size:12px;font-weight:700;width:auto;padding:0 10px;border-radius:12px;" onclick="skipQuiz()">スキップ</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="quiz-progress" style="width:50%"></div>
+  </div>
+  <div class="content" id="quiz-content"></div>
+</div>
+
+<!-- ==================== STROKE ORDER ==================== -->
+<div id="screen-stroke" class="screen">
+  <div class="header">
+    <div class="btn-icon invisible">←</div>
+    <div class="header-title">書き順チェック</div>
+    <button class="btn-icon" style="font-size:12px;font-weight:700;width:auto;padding:0 10px;border-radius:12px;" onclick="skipStroke()">スキップ</button>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="stroke-progress" style="width:66%"></div>
+  </div>
+  <div class="content" id="stroke-content"></div>
+</div>
+
+<!-- ==================== HANDWRITING MISSION ==================== -->
+<div id="screen-handwriting" class="screen">
+  <div class="header">
+    <div class="btn-icon invisible">←</div>
+    <div class="header-title">手書きミッション</div>
+    <div class="btn-icon invisible">×</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" style="width:83%"></div>
+  </div>
+  <div class="content" id="hw-content"></div>
+</div>
+
+<!-- ==================== COMPLETE ==================== -->
+<div id="screen-complete" class="screen">
+  <div class="content" id="complete-content"></div>
+</div>
+
+<!-- ==================== KANJI NOTEBOOK ==================== -->
+<div id="screen-notebook" class="screen">
+  <div class="header">
+    <button class="btn-icon" onclick="showScreen('screen-home')">←</button>
+    <div class="header-title">📔 かんじノート</div>
+    <div class="btn-icon invisible">×</div>
+  </div>
+  <div class="notebook-count" id="notebook-count">0字<span>おぼえた漢字</span></div>
+  <div class="filter-tabs" id="notebook-filters"></div>
+  <div class="kanji-grid" id="notebook-grid"></div>
+</div>
+
+<!-- ==================== PARENT DASHBOARD ==================== -->
+<div id="screen-parent" class="screen parent-wide">
+  <div class="parent-nav">
+    <span>📊 保護者ダッシュボード</span>
+    <button class="btn-icon" style="color:white;background:rgba(255,255,255,.2);" onclick="showScreen('screen-home')">✕</button>
+  </div>
+  <div class="parent-tabs">
+    <div class="parent-tab active" onclick="parentTab('summary',this)">サマリー</div>
+    <div class="parent-tab" onclick="parentTab('kanji',this)">漢字記録</div>
+    <div class="parent-tab" onclick="parentTab('history',this)">学習履歴</div>
+    <div class="parent-tab" onclick="parentTab('settings',this)">設定</div>
+  </div>
+  <div class="parent-content" id="parent-content"></div>
+</div>
+
+<!-- ==================== KANJI CARD OVERLAY ==================== -->
+<div class="overlay" id="kanji-overlay" onclick="closeKanjiCard(event)">
+  <div class="bottom-sheet" id="kanji-sheet">
+    <div class="sheet-handle"></div>
+    <div id="kanji-sheet-content"></div>
+    <button class="btn btn-ghost btn-sm mt-12" onclick="closeKanjiCard()">とじる</button>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast" id="toast"></div>
+
+</div><!-- #app -->
+
+<script>
+// ===================== DATA =====================
+
+const KANJI_DB = {
+  '東': { reading:'ひがし・とう', on:'トウ', kun:'ひがし', meaning:'太陽が昇る方向・東', examples:[{emoji:'🌅',word:'東口',read:'ひがしぐち'},{emoji:'🚉',word:'東京',read:'とうきょう'},{emoji:'🧭',word:'東西',read:'とうざい'}], hint:'「木」に太陽がひっかかった形。太陽が昇る方向が東！', strokes:8 },
+  '西': { reading:'にし・せい', on:'セイ・サイ', kun:'にし', meaning:'太陽が沈む方向・西', examples:[{emoji:'🌇',word:'西口',read:'にしぐち'},{emoji:'🏙',word:'西洋',read:'せいよう'},{emoji:'🧭',word:'東西',read:'とうざい'}], hint:'鳥が巣に帰る頃、太陽は西に沈む。鳥の巣の形！', strokes:6 },
+  '南': { reading:'みなみ・なん', on:'ナン', kun:'みなみ', meaning:'暖かい方向・南', examples:[{emoji:'☀️',word:'南口',read:'みなみぐち'},{emoji:'🌴',word:'南国',read:'なんごく'},{emoji:'🧭',word:'南北',read:'なんぼく'}], hint:'木が南に向かって枝を伸ばす形。', strokes:9 },
+  '北': { reading:'きた・ほく', on:'ホク', kun:'きた', meaning:'寒い方向・北', examples:[{emoji:'❄️',word:'北口',read:'きたぐち'},{emoji:'⭐',word:'北極星',read:'ほっきょくせい'},{emoji:'🧭',word:'南北',read:'なんぼく'}], hint:'二人の人が背中を向け合っている形。', strokes:5 },
+  '電': { reading:'でん', on:'デン', kun:'', meaning:'電気・いなずま', examples:[{emoji:'⚡',word:'電気',read:'でんき'},{emoji:'📞',word:'電話',read:'でんわ'},{emoji:'🚃',word:'電車',read:'でんしゃ'}], hint:'「あめかんむり（雨）」の下に「田」の形。雷から電気！', strokes:13 },
+  '車': { reading:'くるま・しゃ', on:'シャ', kun:'くるま', meaning:'乗り物・車輪', examples:[{emoji:'🚗',word:'車',read:'くるま'},{emoji:'🚃',word:'電車',read:'でんしゃ'},{emoji:'🚗',word:'自動車',read:'じどうしゃ'}], hint:'車輪を上から見た形。真ん中が車軸！', strokes:7 },
+  '駅': { reading:'えき', on:'エキ', kun:'', meaning:'電車が止まる場所', examples:[{emoji:'🚉',word:'駅',read:'えき'},{emoji:'🗺',word:'駅長',read:'えきちょう'},{emoji:'🎫',word:'駅員',read:'えきいん'}], hint:'「馬」へんに「尺」。昔は馬が停まる場所だった！', strokes:14 },
+  '線': { reading:'せん', on:'セン', kun:'', meaning:'細長く続く線', examples:[{emoji:'🗺',word:'路線',read:'ろせん'},{emoji:'✏️',word:'直線',read:'ちょくせん'},{emoji:'🚃',word:'路線図',read:'ろせんず'}], hint:'「糸」に「泉（水が湧き出る）」。細い糸のような線！', strokes:15 },
+  '工': { reading:'こう・く', on:'コウ・ク', kun:'', meaning:'物を作る・仕事', examples:[{emoji:'🔧',word:'工場',read:'こうじょう'},{emoji:'🛠',word:'工作',read:'こうさく'},{emoji:'👷',word:'工事',read:'こうじ'}], hint:'上の横棒が「天」、下の横棒が「地」、縦棒が「人」をつなぐ。', strokes:3 },
+  '作': { reading:'つくる・さく', on:'サク・サ', kun:'つく', meaning:'作る・作品', examples:[{emoji:'🔨',word:'工作',read:'こうさく'},{emoji:'📖',word:'作文',read:'さくぶん'},{emoji:'🎨',word:'作品',read:'さくひん'}], hint:'「人」へんに「乍（かまで切る）」。人が物を作る！', strokes:7 },
+  '力': { reading:'ちから・りょく', on:'リョク・リキ', kun:'ちから', meaning:'パワー・強さ', examples:[{emoji:'💪',word:'力',read:'ちから'},{emoji:'⚡',word:'電力',read:'でんりょく'},{emoji:'🤝',word:'協力',read:'きょうりょく'}], hint:'腕を曲げて力こぶを作った形！', strokes:2 },
+  '動': { reading:'うごく・どう', on:'ドウ', kun:'うご', meaning:'動く・動かす', examples:[{emoji:'🏃',word:'動く',read:'うごく'},{emoji:'🚗',word:'自動車',read:'じどうしゃ'},{emoji:'💓',word:'感動',read:'かんどう'}], hint:'「重い」ものを「力」で動かす！', strokes:11 },
+  '手': { reading:'て・しゅ', on:'シュ', kun:'て', meaning:'手・手で行うこと', examples:[{emoji:'🤚',word:'手',read:'て'},{emoji:'✏️',word:'手書き',read:'てがき'},{emoji:'✉️',word:'手紙',read:'てがみ'}], hint:'指が5本ある手の形！', strokes:4 },
+  '紙': { reading:'かみ・し', on:'シ', kun:'かみ', meaning:'紙・手紙', examples:[{emoji:'📄',word:'紙',read:'かみ'},{emoji:'✉️',word:'手紙',read:'てがみ'},{emoji:'📰',word:'新聞紙',read:'しんぶんし'}], hint:'「糸」へんに「氏」。昔は糸で作られた！', strokes:10 },
+  '書': { reading:'かく・しょ', on:'ショ', kun:'か', meaning:'書く・文字を記す', examples:[{emoji:'✏️',word:'書く',read:'かく'},{emoji:'📚',word:'図書館',read:'としょかん'},{emoji:'📖',word:'教科書',read:'きょうかしょ'}], hint:'「筆で書く」手の動きを表した形！', strokes:10 },
+};
+
+const EPISODES = [
+  // ─── まち探検 ───
+  {
+    id:'ep1', theme:'machi', num:1, title:'古地図の謎',
+    kanjiIds:['東','西','南','北'],
+    pages:[
+      { text:'りくは引っ越しの荷物の中から、古びた[地図]を見つけた。地図には不思議な文字が書いてある。', emoji:'🗺️' },
+      { text:'「[東]の入り口に大きな石の門がある」。りくは首をかしげた。「東ってどっちだ？」', emoji:'🧭' },
+      { text:'太陽が昇る方向が[東]！朝、りくの部屋に光が差し込んでくる方向だ。', emoji:'🌅' },
+      { text:'走り出すと、[北][西][南]の看板も見えてきた。地図の謎が解けた！', emoji:'🏆' },
+    ],
+    quiz:[
+      { q:'「東」の読みは？', big:'東', choices:['ひがし','きた','にし','みなみ'], ans:0, kanjiId:'東' },
+      { q:'太陽が沈む方向はどれ？', big:'', choices:['東 (ひがし)','西 (にし)','南 (みなみ)','北 (きた)'], ans:1, kanjiId:'西' },
+      { q:'「南北」の読みは？', big:'南北', choices:['なんほく','とうざい','なんぼく','ほくなん'], ans:2, kanjiId:'南' },
+    ],
+    hw:{ target:'東 西', reading:'ひがし　にし', mission:'地図に方角を書き込もう！', emoji:'🧭', stage:'なぞり書き' }
+  },
+  {
+    id:'ep2', theme:'machi', num:2, title:'電車の路線図',
+    kanjiIds:['電','車','駅','線'],
+    pages:[
+      { text:'りくは[電車]の路線図をじっと見つめた。「乗り換えはどこだ？」', emoji:'🚃' },
+      { text:'「[駅]を探せばいい！」りくは[線]をたどって目的の[駅]を見つけた。', emoji:'🚉' },
+      { text:'「[電]という字はあめかんむりの下に田があるんだ」とりくは気づいた。', emoji:'⚡' },
+      { text:'電車は走り出した。窓の外に[東]の町が広がる。今日の冒険は大成功！', emoji:'🏆' },
+    ],
+    quiz:[
+      { q:'「電車」の読みは？', big:'電車', choices:['でんしゃ','でんか','でんき','でんき'], ans:0, kanjiId:'電' },
+      { q:'「駅」はどんな場所？', big:'駅', choices:['学校','電車が止まる場所','お店','公園'], ans:1, kanjiId:'駅' },
+      { q:'「路線」の「線」の読みは？', big:'線', choices:['でん','えき','せん','しゃ'], ans:2, kanjiId:'線' },
+    ],
+    hw:{ target:'電車', reading:'でんしゃ', mission:'おじいちゃんへの一言に書いてみよう', emoji:'🚃', stage:'見写し書き' }
+  },
+  {
+    id:'ep3', theme:'machi', num:3, title:'お店の看板',
+    kanjiIds:['東','電','車'],
+    pages:[
+      { text:'商店街の看板には漢字がいっぱい。「[東]口商店街」「[電]気屋」「[車]屋」。', emoji:'🏪' },
+      { text:'りくは看板の漢字を全部読んでみた。全部わかった！', emoji:'😄' },
+      { text:'「漢字がわかると、いろんなものが読めるんだ！」りくは嬉しくなった。', emoji:'🌟' },
+    ],
+    quiz:[
+      { q:'「電気屋」の「電」の読みは？', big:'電', choices:['でん','しゃ','えき','きた'], ans:0, kanjiId:'電' },
+      { q:'「東口」はどちら？', big:'東口', choices:['西の入口','北の入口','東の入口','南の入口'], ans:2, kanjiId:'東' },
+      { q:'「車屋」の「車」の読みは？', big:'車', choices:['でん','くるま','えき','せん'], ans:1, kanjiId:'車' },
+    ],
+    hw:{ target:'電気', reading:'でんき', mission:'お店の看板を書いてみよう', emoji:'🏪', stage:'思い出し書き' }
+  },
+  // ─── モノ作り工場 ───
+  {
+    id:'ep4', theme:'koujou', num:1, title:'設計図の言葉',
+    kanjiIds:['工','作','力','動'],
+    pages:[
+      { text:'りくは工場の設計図を広げた。「[工]場」「[作]業」「[力]計」…漢字だらけだ。', emoji:'🏭' },
+      { text:'「[工]は天と地を人がつなぐ形なんだって」お母さんが教えてくれた。', emoji:'🔨' },
+      { text:'「[力]」は腕を曲げた形。「[動]」は重いものを力で動かす！', emoji:'💪' },
+      { text:'設計図の言葉が全部読めた。いよいよ[工作]開始だ！', emoji:'🛠️' },
+    ],
+    quiz:[
+      { q:'「工作」の読みは？', big:'工作', choices:['こうさく','こうじ','さくひん','こうりょく'], ans:0, kanjiId:'工' },
+      { q:'「力」の読みは？', big:'力', choices:['ちから','うごく','つくる','こう'], ans:0, kanjiId:'力' },
+      { q:'「動く」の読みは？', big:'動く', choices:['つくる','ちから','うごく','はたらく'], ans:2, kanjiId:'動' },
+    ],
+    hw:{ target:'工作', reading:'こうさく', mission:'設計図のラベルを書いてみよう', emoji:'🔨', stage:'なぞり書き' }
+  },
+  {
+    id:'ep5', theme:'koujou', num:2, title:'電気と回路',
+    kanjiIds:['電','力','動'],
+    pages:[
+      { text:'「[電]気が来ていないぞ！」工場長が叫んだ。', emoji:'⚡' },
+      { text:'りくは回路図を見た。「[電][力]が弱い。もっと[力]を上げなくては！」', emoji:'🔋' },
+      { text:'スイッチを入れると機械が[動]き始めた！みんなが歓声をあげた。', emoji:'🎉' },
+    ],
+    quiz:[
+      { q:'「電力」の読みは？', big:'電力', choices:['でんりょく','でんき','ちから','でんわ'], ans:0, kanjiId:'電' },
+      { q:'「動く」はどういう意味？', big:'動く', choices:['止まる','作る','動作する','切る'], ans:2, kanjiId:'動' },
+      { q:'「力」を使う場面は？', big:'力', choices:['眠る','押す・持ち上げる','食べる','書く'], ans:1, kanjiId:'力' },
+    ],
+    hw:{ target:'電力', reading:'でんりょく', mission:'回路図のパーツ名を書こう', emoji:'⚡', stage:'見写し書き' }
+  },
+  {
+    id:'ep6', theme:'koujou', num:3, title:'完成の日',
+    kanjiIds:['工','作','動'],
+    pages:[
+      { text:'「[工作]、ついに完成！」りくが叫ぶと、機械が見事に[動]き出した。', emoji:'🎊' },
+      { text:'「すごい！自分で[作]ったんだ」。りくの胸が誇りで満たされた。', emoji:'🏆' },
+      { text:'「これをおじいちゃんに話そう！」りくはもう電話が楽しみでたまらない。', emoji:'📞' },
+    ],
+    quiz:[
+      { q:'「工作」の「作」の読みは？', big:'作', choices:['こう','つくる','うごく','ちから'], ans:1, kanjiId:'作' },
+      { q:'機械が「動く」はどれ？', big:'動く', choices:['止まる','壊れる','うごく','消える'], ans:2, kanjiId:'動' },
+      { q:'「工場」の読みは？', big:'工場', choices:['こうじょう','こうさく','さくひん','こうじ'], ans:0, kanjiId:'工' },
+    ],
+    hw:{ target:'工作', reading:'こうさく', mission:'完成品のタグカードを書こう', emoji:'🛠️', stage:'思い出し書き' }
+  },
+  // ─── 手紙とつながり ───
+  {
+    id:'ep7', theme:'tegami', num:1, title:'おじいちゃんへ',
+    kanjiIds:['手','紙','書'],
+    pages:[
+      { text:'りくは[手紙]を書くことにした。「[東]の方向に住んでいるおじいちゃんへ。」', emoji:'✉️' },
+      { text:'「[書]くって難しい…」でも一文字ずつ、ゆっくり[書]いた。', emoji:'✏️' },
+      { text:'「[手紙]が書けた！」送ったらおじいちゃん、きっと喜んでくれるな。', emoji:'💌' },
+    ],
+    quiz:[
+      { q:'「手紙」の読みは？', big:'手紙', choices:['てがみ','てし','しゅし','てかみ'], ans:0, kanjiId:'手' },
+      { q:'「書く」の読みは？', big:'書く', choices:['かく','よむ','かく','たべる'], ans:0, kanjiId:'書' },
+      { q:'「紙」の読みは？', big:'紙', choices:['かみ','てん','ほん','えん'], ans:0, kanjiId:'紙' },
+    ],
+    hw:{ target:'手紙', reading:'てがみ', mission:'おじいちゃんへの一言を書こう！', emoji:'✉️', stage:'なぞり書き' }
+  },
+  {
+    id:'ep8', theme:'tegami', num:2, title:'日記の一ページ',
+    kanjiIds:['書','手','電'],
+    pages:[
+      { text:'「今日は[電車]で[東]の駅まで行った」りくは日記に[書]いた。', emoji:'📓' },
+      { text:'漢字が[書]けると、日記がずっとかっこよくなる！', emoji:'✏️' },
+      { text:'「ぼくの日記、もう[電]も[東]も書けるぞ！」りくは誇らしかった。', emoji:'🌟' },
+    ],
+    quiz:[
+      { q:'「書く」の意味は？', big:'書く', choices:['読む','字をかく','食べる','走る'], ans:1, kanjiId:'書' },
+      { q:'「手書き」の読みは？', big:'手書き', choices:['てかき','しゅかき','てがき','しゅがき'], ans:2, kanjiId:'手' },
+      { q:'「電話」の「電」の読みは？', big:'電', choices:['でん','てん','しゃ','えき'], ans:0, kanjiId:'電' },
+    ],
+    hw:{ target:'日記', reading:'にっき', mission:'今日の日記の見出しを書こう', emoji:'📓', stage:'見写し書き' }
+  },
+  {
+    id:'ep9', theme:'tegami', num:3, title:'テレビ電話の前に',
+    kanjiIds:['電','手','書'],
+    pages:[
+      { text:'「おじいちゃんとの[電]話は今日だ！」りくはワクワクした。', emoji:'📱' },
+      { text:'「見せたいものを準備しよう」。りくは今月[書]いた漢字を[手紙]にまとめた。', emoji:'✉️' },
+      { text:'「おじいちゃん、ぼく[電車]も[東]も[工作]も書けるようになったよ！」', emoji:'🌟' },
+    ],
+    quiz:[
+      { q:'「電話」の読みは？', big:'電話', choices:['でんわ','でんき','てがみ','でんしゃ'], ans:0, kanjiId:'電' },
+      { q:'「手紙」を英語にすると？', big:'手紙', choices:['book','letter','phone','map'], ans:1, kanjiId:'手' },
+      { q:'「書く」を使う場面は？', big:'書く', choices:['ご飯を食べる','字や絵をかく','電車に乗る','走る'], ans:1, kanjiId:'書' },
+    ],
+    hw:{ target:'電話', reading:'でんわ', mission:'おじいちゃんに見せたい一言を書こう！', emoji:'📞', stage:'思い出し書き' }
+  },
+];
+
+const AREAS = [
+  { id:'machi',   name:'まち探検',     emoji:'🏙️', color:'area-machi',   epIds:['ep1','ep2','ep3'] },
+  { id:'koujou',  name:'モノ作り工場', emoji:'🏭', color:'area-koujou',  epIds:['ep4','ep5','ep6'] },
+  { id:'tegami',  name:'手紙とつながり', emoji:'📬', color:'area-tegami',epIds:['ep7','ep8','ep9'] },
+];
+
+// ===================== STATE =====================
+
+let state = {
+  childName: '',
+  completedEps: [],   // episode ids
+  learnedKanji: {},   // { kanji: { stage, date } }
+  studyDates: [],     // ['YYYY-MM-DD']
+  streak: 0,
+};
+
+// Current session state
+let cur = {
+  areaId: null,
+  episodeId: null,
+  episode: null,
+  storyPage: 0,
+  quizIdx: 0,
+  quizResults: [],
+  strokeIdx: 0,
+  hwStage: 'なぞり書き',
+  kanjiFilterArea: 'all',
+};
+
+// ===================== PERSISTENCE =====================
+
+function saveState() {
+  try { localStorage.setItem('kanji_app_state', JSON.stringify(state)); } catch(e){}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem('kanji_app_state');
+    if (raw) { const s = JSON.parse(raw); Object.assign(state, s); }
+  } catch(e){}
+}
+
+// ===================== SCREEN NAV =====================
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===================== WELCOME =====================
+
+function startApp() {
+  const name = document.getElementById('child-name-input').value.trim();
+  if (!name) { showToast('なまえをいれてね！'); return; }
+  state.childName = name;
+  saveState();
+  initHome();
+  showScreen('screen-home');
+}
+
+// ===================== HOME =====================
+
+function initHome() {
+  document.getElementById('home-name').textContent = state.childName + 'たんてい';
+  // streak
+  const today = todayStr();
+  if (!state.studyDates.includes(today)) {
+    // not yet studied today
+  }
+  if (state.streak > 0) {
+    document.getElementById('streak-badge').style.display = '';
+    document.getElementById('streak-num').textContent = state.streak;
+  } else {
+    document.getElementById('streak-badge').style.display = 'none';
+  }
+  renderAreas();
+}
+
+function renderAreas() {
+  const el = document.getElementById('area-list');
+  el.innerHTML = '';
+
+  AREAS.forEach((area, ai) => {
+    // unlock logic: first episode of each area except first is unlocked if prev area ep1 done
+    const prevAreaUnlocked = ai === 0 ? true : state.completedEps.includes(AREAS[ai-1].epIds[0]);
+    const areaLocked = !prevAreaUnlocked;
+
+    const eps = area.epIds.map(id => EPISODES.find(e => e.id === id));
+    const pips = eps.map((ep, ei) => {
+      const done = state.completedEps.includes(ep.id);
+      const unlocked = !areaLocked && (ei === 0 || state.completedEps.includes(eps[ei-1].id));
+      const cls = done ? 'done' : (unlocked ? 'open' : 'lock');
+      const icon = done ? '★' : (unlocked ? String(ei+1) : '🔒');
+      return `<div class="ep-pip ${cls}">${icon}</div>`;
+    }).join('');
+
+    el.innerHTML += `
+      <div class="area-card ${area.color} ${areaLocked ? 'locked' : ''}"
+        onclick="${areaLocked ? 'showToast(\"前のエリアをクリアしよう！\")' : `showAreaEps('${area.id}')`}">
+        <div class="area-header">
+          <div class="area-emoji">${area.emoji}</div>
+          <div class="area-info">
+            <div class="area-name">${area.name}</div>
+            <div class="area-sub">${eps.filter(e=>state.completedEps.includes(e.id)).length} / 3話 クリア</div>
+          </div>
+          ${areaLocked ? '<div class="area-lock">🔒</div>' : ''}
+        </div>
+        <div class="area-stars"><div class="star-wrap">${pips}</div></div>
+      </div>`;
+  });
+}
+
+// ===================== EPISODE LIST =====================
+
+function showAreaEps(areaId) {
+  cur.areaId = areaId;
+  const area = AREAS.find(a => a.id === areaId);
+  document.getElementById('ep-list-title').textContent = area.emoji + ' ' + area.name;
+  const eps = area.epIds.map(id => EPISODES.find(e => e.id === id));
+  const el = document.getElementById('ep-list-content');
+  el.innerHTML = '';
+
+  const areaIdx = AREAS.findIndex(a => a.id === areaId);
+
+  eps.forEach((ep, i) => {
+    const done = state.completedEps.includes(ep.id);
+    const prevDone = i === 0 ? true : state.completedEps.includes(eps[i-1].id);
+    const locked = !prevDone && !done;
+    const badge = done ? '<span class="ep-badge done">クリア ✅</span>' :
+                  (locked ? '<span class="ep-badge lock">🔒</span>' :
+                   '<span class="ep-badge open">挑戦！</span>');
+
+    const colors = ['#2C6FBF','#4CAF50','#7B1FA2'];
+    el.innerHTML += `
+      <div class="ep-card ${locked ? 'locked' : ''}"
+        onclick="${locked ? 'showToast(\"前の話をクリアしよう！\")' : `startEpisode('${ep.id}')`}">
+        <div class="ep-card-inner">
+          <div class="ep-num" style="background:${colors[areaIdx]}">${ep.num}</div>
+          <div class="ep-card-info">
+            <div class="ep-card-title">${ep.title}</div>
+            <div class="ep-card-kanji">漢字：${ep.kanjiIds.join('・')}</div>
+            <div class="ep-card-meta">⏱ 約5〜7分</div>
+          </div>
+          ${badge}
+        </div>
+      </div>`;
+  });
+  showScreen('screen-episodes');
+}
+
+// ===================== STORY =====================
+
+function startEpisode(epId) {
+  cur.episodeId = epId;
+  cur.episode = EPISODES.find(e => e.id === epId);
+  cur.storyPage = 0;
+  cur.quizIdx = 0;
+  cur.quizResults = [];
+  cur.strokeIdx = 0;
+  document.getElementById('story-title').textContent = cur.episode.title;
+  renderStoryPage();
+  showScreen('screen-story');
+}
+
+function renderStoryPage() {
+  const ep = cur.episode;
+  const page = ep.pages[cur.storyPage];
+  const total = ep.pages.length;
+
+  // Progress
+  document.getElementById('story-progress').style.width =
+    Math.round(((cur.storyPage + 1) / (total + 3)) * 100) + '%';
+
+  // Page dots
+  const dots = ep.pages.map((_, i) =>
+    `<div class="page-dot ${i === cur.storyPage ? 'active' : ''}"></div>`).join('');
+  document.getElementById('story-page-dots').innerHTML = dots;
+
+  // Text: replace [漢字] with tappable spans
+  let html = page.text.replace(/\[(.+?)\]/g, (m, k) => {
+    if (KANJI_DB[k]) return `<span class="kanji-tap" onclick="showKanjiCard('${k}')">${k}</span>`;
+    // multi-char compound: highlight whole word, tap first kanji
+    const firstKanji = [...k].find(c => KANJI_DB[c]);
+    if (firstKanji) return `<span class="kanji-tap" onclick="showKanjiCard('${firstKanji}')">${k}</span>`;
+    return `<span class="kanji-tap">${k}</span>`;
+  });
+
+  document.getElementById('story-page-content').innerHTML = `
+    <div class="story-illustration">${page.emoji}</div>
+    <div class="story-text-wrap">${html}</div>`;
+
+  // Next button
+  const isLast = cur.storyPage >= total - 1;
+  const btn = document.getElementById('story-next-btn');
+  btn.textContent = isLast ? 'ミッションへ ▶' : 'つぎへ ▶';
+}
+
+function storyNext() {
+  const ep = cur.episode;
+  if (cur.storyPage < ep.pages.length - 1) {
+    cur.storyPage++;
+    renderStoryPage();
+  } else {
+    startQuiz();
+  }
+}
+
+function playStoryAudio() { showToast('🔊 読み上げ機能は実装予定'); }
+
+function confirmLeaveStory() {
+  if (confirm('途中でやめますか？\n進捗は保存されます。')) {
+    showAreaEps(cur.areaId);
+  }
+}
+
+// ===================== KANJI CARD =====================
+
+function showKanjiCard(k) {
+  const d = KANJI_DB[k];
+  if (!d) return;
+  document.getElementById('kanji-sheet-content').innerHTML = `
+    <div class="kanji-big">${k}</div>
+    <div class="kanji-reading">${d.reading}　${d.strokes}画</div>
+    <div class="kanji-context">${d.meaning}</div>
+    <div class="kanji-examples">
+      ${d.examples.map(ex => `
+        <div class="kanji-ex-row">
+          <div class="kanji-ex-emoji">${ex.emoji}</div>
+          <div>
+            <div class="kanji-ex-text">${ex.word}</div>
+            <div class="kanji-ex-reading">${ex.read}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="background:var(--blue-light);border-radius:10px;padding:12px;font-size:14px;line-height:1.7;color:var(--blue-dark);">
+      💡 ${d.hint}
+    </div>`;
+  document.getElementById('kanji-overlay').classList.add('open');
+}
+
+function closeKanjiCard(e) {
+  if (!e || e.target === document.getElementById('kanji-overlay')) {
+    document.getElementById('kanji-overlay').classList.remove('open');
+  }
+}
+
+// ===================== QUIZ =====================
+
+function startQuiz() {
+  cur.quizIdx = 0;
+  cur.quizResults = [];
+  showScreen('screen-quiz');
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const ep = cur.episode;
+  const q = ep.quiz[cur.quizIdx];
+  const total = ep.quiz.length;
+  document.getElementById('quiz-progress').style.width =
+    Math.round(((cur.quizIdx + 1) / (total + 2)) * 100) + '%';
+
+  const choices = q.choices.map((c, i) =>
+    `<button class="choice-btn" id="choice-${i}" onclick="answerQuiz(${i})">${c}</button>`
+  ).join('');
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-counter">問題 ${cur.quizIdx+1} / ${total}</div>
+    ${q.big ? `<div class="quiz-kanji-big">${q.big}</div>` : ''}
+    <div class="quiz-question">${q.q}</div>
+    <div class="quiz-choices">${choices}</div>
+    <div id="quiz-feedback"></div>
+    <div style="padding:16px;margin-top:8px;">
+      <button class="btn btn-primary" id="quiz-next-btn" style="display:none" onclick="quizNext()">つぎへ ▶</button>
+    </div>`;
+}
+
+function answerQuiz(idx) {
+  const q = cur.episode.quiz[cur.quizIdx];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const correct = idx === q.ans;
+  btns[idx].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.ans].classList.add('correct');
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? '⭕ 正解！' : `✕ 正しくは「${q.choices[q.ans]}」だよ`;
+
+  cur.quizResults.push({ kanji: q.kanjiId, correct });
+  document.getElementById('quiz-next-btn').style.display = '';
+}
+
+function quizNext() {
+  cur.quizIdx++;
+  if (cur.quizIdx < cur.episode.quiz.length) {
+    renderQuiz();
+  } else {
+    startStroke();
+  }
+}
+
+function skipQuiz() {
+  cur.quizResults = cur.episode.quiz.map(q => ({ kanji: q.kanjiId, correct: false, skipped: true }));
+  startStroke();
+}
+
+// ===================== STROKE ORDER =====================
+
+function startStroke() {
+  cur.strokeIdx = 0;
+  showScreen('screen-stroke');
+  renderStroke();
+}
+
+function renderStroke() {
+  const ep = cur.episode;
+  const kanjiId = ep.kanjiIds[cur.strokeIdx];
+  const d = KANJI_DB[kanjiId] || {};
+  const total = ep.kanjiIds.length;
+  document.getElementById('stroke-progress').style.width =
+    Math.round(((cur.strokeIdx + 1) / (total + 1)) * 100) + '%';
+
+  const dots = ep.kanjiIds.map((_, i) =>
+    `<div class="kanji-nav-dot ${i === cur.strokeIdx ? 'active' : ''}"></div>`).join('');
+
+  const svg = getStrokeSVG(kanjiId);
+  const isLast = cur.strokeIdx >= total - 1;
+
+  document.getElementById('stroke-content').innerHTML = `
+    <div class="stroke-screen">
+      <div class="stroke-kanji-title">${kanjiId}</div>
+      <div style="font-size:14px;color:var(--gray-3);margin-bottom:4px;">${d.reading || ''}</div>
+      <div class="stroke-svg-wrap">${svg}</div>
+      <button class="audio-btn" onclick="animateStrokes()">▶ アニメーション再生</button>
+      <div class="stroke-hint">
+        <strong>💡 覚えるポイント</strong>
+        ${d.hint || kanjiId + 'の形を覚えよう'}<br>
+        <span style="color:var(--gray-3)">総画数：${d.strokes || ''}画</span>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--gray-3);margin-bottom:6px;">よく使う言葉</div>
+      <div class="stroke-examples">
+        ${(d.examples||[]).map(ex =>
+          `<div class="stroke-ex-pill">${ex.word}<br><span style="font-size:11px;color:var(--gray-3)">${ex.read}</span></div>`
+        ).join('')}
+      </div>
+      <div class="kanji-nav-dots">${dots}</div>
+      <button class="btn ${isLast ? 'btn-orange' : 'btn-primary'} mt-12" onclick="${isLast ? 'startHandwriting()' : 'nextStroke()'}">
+        ${isLast ? '手書きミッションへ ✏️' : 'つぎの漢字へ ▶'}
+      </button>
+    </div>`;
+}
+
+function getStrokeSVG(k) {
+  // Simplified stroke-order SVG (schematic, not actual KanjiVG)
+  const svgMap = {
+    '東': `<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="60" y="85" font-size="80" text-anchor="middle" fill="#3A6EA8" font-family="serif" opacity="0.15">東</text>
+      <text x="60" y="85" font-size="80" text-anchor="middle" fill="none" stroke="#3A6EA8" stroke-width="1" font-family="serif">東</text>
+      <circle cx="20" cy="20" r="8" fill="#F5A623" opacity="0.9"/>
+      <text x="20" y="24" font-size="9" text-anchor="middle" fill="white" font-weight="bold">1</text>
+    </svg>`,
+    '電': `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="60" y="85" font-size="80" text-anchor="middle" fill="#3A6EA8" font-family="serif" opacity="0.15">電</text>
+      <text x="60" y="85" font-size="80" text-anchor="middle" fill="none" stroke="#3A6EA8" stroke-width="1" font-family="serif">電</text>
+      <circle cx="20" cy="20" r="8" fill="#F5A623" opacity="0.9"/>
+      <text x="20" y="24" font-size="9" text-anchor="middle" fill="white" font-weight="bold">1</text>
+    </svg>`,
+  };
+  const fallback = `<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="120" rx="8" fill="#EBF3FB"/>
+    <text x="60" y="82" font-size="72" text-anchor="middle" fill="#3A6EA8" font-family="serif">${k}</text>
+    <text x="60" y="108" font-size="11" text-anchor="middle" fill="#9E9E9E">${KANJI_DB[k]?.strokes || ''}画</text>
+  </svg>`;
+  return svgMap[k] || fallback;
+}
+
+function animateStrokes() { showToast('✏️ 書き順アニメーション（正式版で実装）'); }
+function nextStroke() { cur.strokeIdx++; renderStroke(); }
+function skipStroke() { startHandwriting(); }
+
+// ===================== HANDWRITING =====================
+
+function startHandwriting() {
+  showScreen('screen-handwriting');
+  renderHandwriting();
+}
+
+function renderHandwriting() {
+  const hw = cur.episode.hw;
+  cur.hwStage = hw.stage;
+
+  const stages = [
+    { name:'なぞり書き', desc:'薄い文字をなぞって書く', icon:'✏️' },
+    { name:'見写し書き', desc:'手本を見ながら書く', icon:'👀' },
+    { name:'思い出し書き', desc:'手本なしで自分の力で書く！', icon:'🌟' },
+  ];
+
+  const stageButtons = stages.map(s => `
+    <div class="stage-btn ${cur.hwStage === s.name ? 'selected' : ''}"
+      onclick="selectStage('${s.name}', this)">
+      <div class="stage-icon">${s.icon}</div>
+      <div class="stage-info">
+        <div class="stage-name">${s.name}</div>
+        <div class="stage-desc">${s.desc}</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('hw-content').innerHTML = `
+    <div class="card card-parchment" style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-3);margin-bottom:8px;">📝 今日のミッション</div>
+      <div class="hw-emoji">${hw.emoji}</div>
+      <div class="hw-mission-text">${hw.mission}</div>
+      <div class="hw-target">${hw.target}</div>
+      <div class="hw-reading">${hw.reading}</div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--gray-3)">今日のステージを選ぼう：</div>
+    <div class="stage-selector">${stageButtons}</div>
+
+    ${cur.hwStage === 'なぞり書き' ? `
+      <div class="card" style="text-align:center;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;">なぞり書き用</div>
+        <div class="nazori-char">${hw.target}</div>
+        <div style="font-size:12px;color:var(--gray-3);margin-top:4px;">プリントして、この文字の上をなぞろう</div>
+      </div>` : ''}
+
+    <div style="margin-top:16px;">
+      <button class="btn btn-orange" onclick="completeHandwriting()">✅ かけた！</button>
+      <button class="btn btn-ghost btn-sm btn-gap" onclick="skipHandwriting()">あとでやる</button>
+    </div>`;
+}
+
+function selectStage(stage, el) {
+  cur.hwStage = stage;
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  renderHandwriting();
+}
+
+function completeHandwriting() {
+  markComplete(true);
+}
+function skipHandwriting() {
+  markComplete(false);
+}
+
+// ===================== COMPLETE =====================
+
+function markComplete(handwritingDone) {
+  const ep = cur.episode;
+
+  // Record completion
+  if (!state.completedEps.includes(ep.id)) {
+    state.completedEps.push(ep.id);
+  }
+
+  // Record kanji
+  ep.kanjiIds.forEach(k => {
+    if (!state.learnedKanji[k]) {
+      state.learnedKanji[k] = { stage: handwritingDone ? cur.hwStage : 'seen', date: todayStr(), theme: cur.areaId };
+    } else if (handwritingDone) {
+      state.learnedKanji[k].stage = cur.hwStage;
+    }
+  });
+
+  // Study date & streak
+  const today = todayStr();
+  if (!state.studyDates.includes(today)) {
+    state.studyDates.push(today);
+    // Check streak
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yd = yesterday.toISOString().slice(0,10);
+    if (state.studyDates.includes(yd)) {
+      state.streak = (state.streak || 0) + 1;
+    } else {
+      state.streak = 1;
+    }
+  }
+
+  saveState();
+  showComplete(handwritingDone);
+}
+
+function showComplete(handwritingDone) {
+  showScreen('screen-complete');
+  const ep = cur.episode;
+  const starsHtml = (handwritingDone ? '⭐⭐⭐' : '⭐⭐☆');
+  const kanjiChars = ep.kanjiIds.map((k, i) =>
+    `<div class="learned-kanji-char" style="animation-delay:${i*0.1}s">${k}</div>`).join('');
+
+  document.getElementById('complete-content').innerHTML = `
+    <div class="complete-screen">
+      <div class="complete-emoji">🌟</div>
+      <div class="stars-row">${starsHtml}</div>
+      <div class="complete-title">「${ep.title}」クリア！</div>
+      <div class="complete-sub">やったね、${state.childName}たんてい！</div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--gray-3);margin-bottom:8px;">今日おぼえた漢字</div>
+      <div class="learned-kanji">${kanjiChars}</div>
+
+      <div class="notebook-added">
+        📔 かんじノートに ${ep.kanjiIds.length}字 追加されました！
+      </div>
+
+      ${handwritingDone ? `<div class="card card-orange" style="margin:12px 0;">
+        <div style="font-size:14px;font-weight:700;">✍️ 手書きミッション完了！</div>
+        <div style="font-size:13px;color:var(--gray-3);margin-top:4px;">${cur.hwStage} をクリア</div>
+      </div>` : ''}
+
+      ${state.streak >= 2 ? `<div class="card card-blue" style="margin:12px 0;">
+        🔥 ${state.streak}日連続！すごいぞ、${state.childName}たんてい！
+      </div>` : ''}
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px;">
+        <button class="btn btn-primary" onclick="nextEpisodeOrHome()">つぎの話へ ▶</button>
+        <button class="btn btn-ghost" onclick="goHome()">🗺️ マップにもどる</button>
+      </div>
+    </div>`;
+}
+
+function nextEpisodeOrHome() {
+  const area = AREAS.find(a => a.id === cur.areaId);
+  const epIds = area.epIds;
+  const curIdx = epIds.indexOf(cur.episodeId);
+  if (curIdx < epIds.length - 1) {
+    startEpisode(epIds[curIdx + 1]);
+  } else {
+    goHome();
+  }
+}
+
+function goHome() {
+  initHome();
+  showScreen('screen-home');
+}
+
+// ===================== KANJI NOTEBOOK =====================
+
+function showNotebook() {
+  renderNotebook();
+  showScreen('screen-notebook');
+}
+
+function renderNotebook() {
+  const learned = state.learnedKanji;
+  const keys = Object.keys(learned);
+  document.getElementById('notebook-count').innerHTML =
+    `${keys.length}字<span>おぼえた漢字</span>`;
+
+  const areas = [
+    { id:'all', name:'全部' },
+    { id:'machi', name:'🏙まち' },
+    { id:'koujou', name:'🏭工場' },
+    { id:'tegami', name:'📬手紙' },
+  ];
+  const tabs = areas.map(a =>
+    `<div class="filter-tab ${cur.kanjiFilterArea === a.id ? 'active' : ''}"
+      onclick="filterNotebook('${a.id}')">${a.name}</div>`).join('');
+  document.getElementById('notebook-filters').innerHTML = tabs;
+
+  const filtered = keys.filter(k =>
+    cur.kanjiFilterArea === 'all' || learned[k].theme === cur.kanjiFilterArea
+  );
+
+  const stageBadge = (s) => {
+    if (!s || s === 'seen') return '☆';
+    if (s === 'なぞり書き') return '⭐';
+    if (s === '見写し書き') return '⭐⭐';
+    if (s === '思い出し書き') return '🌟';
+    return '☆';
+  };
+
+  const items = filtered.map(k => {
+    const info = KANJI_DB[k] || {};
+    return `<div class="kanji-grid-item" onclick="showKanjiCard('${k}')">
+      <div class="kanji-grid-char">${k}</div>
+      <div class="kanji-grid-read">${info.reading ? info.reading.split('・')[0] : ''}</div>
+      <div class="kanji-grid-badge">${stageBadge(learned[k]?.stage)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('notebook-grid').innerHTML =
+    items || `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--gray-3)">
+      まだ漢字がないよ。冒険を始めよう！</div>`;
+}
+
+function filterNotebook(areaId) {
+  cur.kanjiFilterArea = areaId;
+  renderNotebook();
+}
+
+// ===================== PARENT DASHBOARD =====================
+
+function showParent() {
+  parentTab('summary', document.querySelector('.parent-tab'));
+  showScreen('screen-parent');
+}
+
+function parentTab(tab, el) {
+  document.querySelectorAll('.parent-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const learned = state.learnedKanji;
+  const keys = Object.keys(learned);
+  const studyDays = state.studyDates.length;
+  const completedCount = state.completedEps.length;
+
+  const avgMin = completedCount > 0 ? Math.round((completedCount * 6)) : 0;
+
+  if (tab === 'summary') {
+    const hints = keys.length > 0
+      ? `「${keys.slice(-1)[0]}」という漢字を覚えました！「${keys.slice(-1)[0]}」を使った言葉を話しかけてみましょう。`
+      : 'まだ学習が始まっていません。最初のエピソードを開いてみましょう！';
+
+    const calDays = buildCalendar();
+
+    document.getElementById('parent-content').innerHTML = `
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num">${studyDays}</div><div class="stat-label">学習日数（通算）</div></div>
+        <div class="stat-card"><div class="stat-num">${completedCount}</div><div class="stat-label">クリアエピソード</div></div>
+        <div class="stat-card"><div class="stat-num">${keys.length}</div><div class="stat-label">おぼえた漢字</div></div>
+        <div class="stat-card"><div class="stat-num">${state.streak}</div><div class="stat-label">連続学習日数🔥</div></div>
+      </div>
+
+      <div class="section-title">今月の学習カレンダー</div>
+      <div class="calendar-grid">${calDays}</div>
+
+      <div class="section-title">最近おぼえた漢字</div>
+      ${keys.length === 0 ? '<p style="color:var(--gray-3);font-size:14px;">まだありません</p>' :
+        keys.slice(-6).reverse().map(k => {
+          const d = KANJI_DB[k] || {};
+          const info = learned[k] || {};
+          const badge = info.stage === '思い出し書き' ? '🌟' : info.stage === '見写し書き' ? '⭐⭐' : '⭐';
+          return `<div class="kanji-list-row">
+            <div class="kanji-list-char">${k}</div>
+            <div class="kanji-list-info">
+              <div class="kanji-list-word">${(d.examples||[{word:''}])[0].word}</div>
+              <div class="kanji-list-read">${d.reading || ''}</div>
+            </div>
+            <div class="kanji-list-status">${badge}</div>
+          </div>`;
+        }).join('')
+      }
+
+      <div class="hint-card">
+        <div class="hint-card-title">💬 声かけヒント</div>
+        <div class="hint-card-text">${hints}</div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="showToast('テレビ電話モード（全画面表示）は近日公開！')">
+          📱 テレビ電話モードで見せる
+        </button>
+      </div>`;
+
+  } else if (tab === 'kanji') {
+    document.getElementById('parent-content').innerHTML = `
+      <div class="section-title">書けるようになった漢字</div>
+      ${keys.length === 0 ? '<p style="color:var(--gray-3);font-size:14px;">まだありません</p>' :
+        keys.map(k => {
+          const d = KANJI_DB[k] || {};
+          const info = learned[k] || {};
+          const stageLabel = info.stage === '思い出し書き' ? '🌟 思い出し書き' :
+                              info.stage === '見写し書き' ? '⭐⭐ 見写し書き' :
+                              info.stage === 'なぞり書き' ? '⭐ なぞり書き' : '☆ 見た';
+          return `<div class="kanji-list-row">
+            <div class="kanji-list-char">${k}</div>
+            <div class="kanji-list-info">
+              <div class="kanji-list-word">${d.meaning || ''}</div>
+              <div class="kanji-list-read">${stageLabel}</div>
+            </div>
+          </div>`;
+        }).join('')
+      }
+      <div style="margin-top:16px;">
+        <button class="btn btn-ghost" onclick="showToast('練習プリントPDF生成は近日公開！')">
+          🖨️ 練習プリントを作る
+        </button>
+      </div>`;
+
+  } else if (tab === 'history') {
+    const dates = [...state.studyDates].reverse().slice(0, 14);
+    document.getElementById('parent-content').innerHTML = `
+      <div class="section-title">学習履歴</div>
+      ${dates.length === 0 ? '<p style="color:var(--gray-3);font-size:14px;">まだ学習記録がありません</p>' :
+        dates.map(d => `
+          <div class="kanji-list-row">
+            <div style="font-size:20px;">📅</div>
+            <div class="kanji-list-info">
+              <div class="kanji-list-word">${d}</div>
+              <div class="kanji-list-read">学習あり</div>
+            </div>
+            <div class="kanji-list-status">✅</div>
+          </div>`).join('')
+      }`;
+
+  } else if (tab === 'settings') {
+    document.getElementById('parent-content').innerHTML = `
+      <div class="section-title">アカウント設定</div>
+      <div class="card" style="margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">子どもの名前</div>
+        <input type="text" id="settings-name" value="${state.childName}"
+          style="width:100%;padding:10px;border:2px solid var(--gray-2);border-radius:8px;font-size:16px;font-family:inherit;">
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="saveName()">保存</button>
+      </div>
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">データリセット</div>
+        <div style="font-size:13px;color:var(--gray-3);margin-bottom:8px;">学習記録をすべてリセットします（元には戻せません）</div>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red);border-color:var(--red);" onclick="resetData()">
+          全データを削除
+        </button>
+      </div>`;
+  }
+}
+
+function buildCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayDate = now.getDate();
+
+  let html = ['日','月','火','水','木','金','土'].map(d =>
+    `<div class="cal-day-label">${d}</div>`).join('');
+
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const studied = state.studyDates.includes(dateStr);
+    const isToday = d === todayDate;
+    html += `<div class="cal-day ${studied ? 'studied' : ''} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  return html;
+}
+
+function saveName() {
+  const v = document.getElementById('settings-name').value.trim();
+  if (!v) return;
+  state.childName = v;
+  saveState();
+  showToast('保存しました！');
+}
+
+function resetData() {
+  if (!confirm('本当にすべてのデータを削除しますか？')) return;
+  state = { childName:'', completedEps:[], learnedKanji:{}, studyDates:[], streak:0 };
+  saveState();
+  showToast('リセットしました');
+  showScreen('screen-welcome');
+}
+
+// ===================== UTILS =====================
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ===================== INIT =====================
+
+loadState();
+document.getElementById('child-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startApp();
+});
+
+// Navigate notebook from screen-home icon
+document.querySelector('[onclick="showScreen(\'screen-notebook\')"]');
+
+// If already named, go to home
+if (state.childName) {
+  initHome();
+  showScreen('screen-home');
+}
+</script>
+</body>
+</html>
