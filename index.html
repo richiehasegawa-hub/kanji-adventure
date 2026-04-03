@@ -574,7 +574,7 @@ ruby rt { font-size: 0.55em; }
   <div class="header">
     <button class="btn-icon" onclick="confirmLeaveStory()">←</button>
     <div class="header-title" id="story-title"></div>
-    <div class="btn-icon invisible">×</div>
+    <button class="btn-icon" id="text-size-btn" onclick="toggleTextSize()" style="font-size:11px;width:48px;">文字▲</button>
   </div>
   <div class="progress-bar-wrap">
     <div class="progress-bar-fill" id="story-progress" style="width:0%"></div>
@@ -680,19 +680,46 @@ ruby rt { font-size: 0.55em; }
 const KANJI_DB = {
   '東': { reading:'ひがし・とう', on:'トウ', kun:'ひがし', meaning:'太陽が昇る方向・東', examples:[{emoji:'🌅',word:'東口',read:'ひがしぐち'},{emoji:'🚉',word:'東京',read:'とうきょう'},{emoji:'🧭',word:'東西',read:'とうざい'}], hint:'「木」に太陽がひっかかった形。太陽が昇る方向が東！', strokes:8 },
   '西': { reading:'にし・せい', on:'セイ・サイ', kun:'にし', meaning:'太陽が沈む方向・西', examples:[{emoji:'🌇',word:'西口',read:'にしぐち'},{emoji:'🏙',word:'西洋',read:'せいよう'},{emoji:'🧭',word:'東西',read:'とうざい'}], hint:'鳥が巣に帰る頃、太陽は西に沈む。鳥の巣の形！', strokes:6 },
-  '南': { reading:'みなみ・なん', on:'ナン', kun:'みなみ', meaning:'暖かい方向・南', examples:[{emoji:'☀️',word:'南口',read:'みなみぐち'},{emoji:'🌴',word:'南国',read:'なんごく'},{emoji:'🧭',word:'南北',read:'なんぼく'}], hint:'木が南に向かって枝を伸ばす形。', strokes:9 },
-  '北': { reading:'きた・ほく', on:'ホク', kun:'きた', meaning:'寒い方向・北', examples:[{emoji:'❄️',word:'北口',read:'きたぐち'},{emoji:'⭐',word:'北極星',read:'ほっきょくせい'},{emoji:'🧭',word:'南北',read:'なんぼく'}], hint:'二人の人が背中を向け合っている形。', strokes:5 },
-  '電': { reading:'でん', on:'デン', kun:'', meaning:'電気・いなずま', examples:[{emoji:'⚡',word:'電気',read:'でんき'},{emoji:'📞',word:'電話',read:'でんわ'},{emoji:'🚃',word:'電車',read:'でんしゃ'}], hint:'「あめかんむり（雨）」の下に「田」の形。雷から電気！', strokes:13 },
-  '車': { reading:'くるま・しゃ', on:'シャ', kun:'くるま', meaning:'乗り物・車輪', examples:[{emoji:'🚗',word:'車',read:'くるま'},{emoji:'🚃',word:'電車',read:'でんしゃ'},{emoji:'🚗',word:'自動車',read:'じどうしゃ'}], hint:'車輪を上から見た形。真ん中が車軸！', strokes:7 },
-  '駅': { reading:'えき', on:'エキ', kun:'', meaning:'電車が止まる場所', examples:[{emoji:'🚉',word:'駅',read:'えき'},{emoji:'🗺',word:'駅長',read:'えきちょう'},{emoji:'🎫',word:'駅員',read:'えきいん'}], hint:'「馬」へんに「尺」。昔は馬が停まる場所だった！', strokes:14 },
-  '線': { reading:'せん', on:'セン', kun:'', meaning:'細長く続く線', examples:[{emoji:'🗺',word:'路線',read:'ろせん'},{emoji:'✏️',word:'直線',read:'ちょくせん'},{emoji:'🚃',word:'路線図',read:'ろせんず'}], hint:'「糸」に「泉（水が湧き出る）」。細い糸のような線！', strokes:15 },
-  '工': { reading:'こう・く', on:'コウ・ク', kun:'', meaning:'物を作る・仕事', examples:[{emoji:'🔧',word:'工場',read:'こうじょう'},{emoji:'🛠',word:'工作',read:'こうさく'},{emoji:'👷',word:'工事',read:'こうじ'}], hint:'上の横棒が「天」、下の横棒が「地」、縦棒が「人」をつなぐ。', strokes:3 },
-  '作': { reading:'つくる・さく', on:'サク・サ', kun:'つく', meaning:'作る・作品', examples:[{emoji:'🔨',word:'工作',read:'こうさく'},{emoji:'📖',word:'作文',read:'さくぶん'},{emoji:'🎨',word:'作品',read:'さくひん'}], hint:'「人」へんに「乍（かまで切る）」。人が物を作る！', strokes:7 },
-  '力': { reading:'ちから・りょく', on:'リョク・リキ', kun:'ちから', meaning:'パワー・強さ', examples:[{emoji:'💪',word:'力',read:'ちから'},{emoji:'⚡',word:'電力',read:'でんりょく'},{emoji:'🤝',word:'協力',read:'きょうりょく'}], hint:'腕を曲げて力こぶを作った形！', strokes:2 },
-  '動': { reading:'うごく・どう', on:'ドウ', kun:'うご', meaning:'動く・動かす', examples:[{emoji:'🏃',word:'動く',read:'うごく'},{emoji:'🚗',word:'自動車',read:'じどうしゃ'},{emoji:'💓',word:'感動',read:'かんどう'}], hint:'「重い」ものを「力」で動かす！', strokes:11 },
-  '手': { reading:'て・しゅ', on:'シュ', kun:'て', meaning:'手・手で行うこと', examples:[{emoji:'🤚',word:'手',read:'て'},{emoji:'✏️',word:'手書き',read:'てがき'},{emoji:'✉️',word:'手紙',read:'てがみ'}], hint:'指が5本ある手の形！', strokes:4 },
-  '紙': { reading:'かみ・し', on:'シ', kun:'かみ', meaning:'紙・手紙', examples:[{emoji:'📄',word:'紙',read:'かみ'},{emoji:'✉️',word:'手紙',read:'てがみ'},{emoji:'📰',word:'新聞紙',read:'しんぶんし'}], hint:'「糸」へんに「氏」。昔は糸で作られた！', strokes:10 },
-  '書': { reading:'かく・しょ', on:'ショ', kun:'か', meaning:'書く・文字を記す', examples:[{emoji:'✏️',word:'書く',read:'かく'},{emoji:'📚',word:'図書館',read:'としょかん'},{emoji:'📖',word:'教科書',read:'きょうかしょ'}], hint:'「筆で書く」手の動きを表した形！', strokes:10 },
+  '南': { reading:'みなみ・なん', on:'ナン', kun:'みなみ', meaning:'暖かい方向・南', examples:[{emoji:'🏖',word:'南国',read:'なんごく'},{emoji:'☀️',word:'南口',read:'みなみぐち'},{emoji:'🧭',word:'南北',read:'なんぼく'}], hint:'草木がたくさん生える暖かい方向。植物の形！', strokes:9 },
+  '北': { reading:'きた・ほく', on:'ホク', kun:'きた', meaning:'寒い方向・北', examples:[{emoji:'❄️',word:'北国',read:'きたぐに'},{emoji:'🧭',word:'北口',read:'きたぐち'},{emoji:'🌏',word:'北海道',read:'ほっかいどう'}], hint:'二人が背中合わせで寒さをしのぐ形！', strokes:5 },
+  '電': { reading:'でん', on:'デン', kun:'', meaning:'電気・稲妻', examples:[{emoji:'⚡',word:'電気',read:'でんき'},{emoji:'🚃',word:'電車',read:'でんしゃ'},{emoji:'📞',word:'電話',read:'でんわ'}], hint:'雨の下に田んぼ。稲妻（電気）が田んぼに落ちる！', strokes:13 },
+  '車': { reading:'くるま・しゃ', on:'シャ', kun:'くるま', meaning:'乗り物・車', examples:[{emoji:'🚗',word:'自動車',read:'じどうしゃ'},{emoji:'🚃',word:'電車',read:'でんしゃ'},{emoji:'🚲',word:'自転車',read:'じてんしゃ'}], hint:'車輪を上から見た形！', strokes:7 },
+  '駅': { reading:'えき', on:'エキ', kun:'', meaning:'電車が止まる場所', examples:[{emoji:'🚉',word:'駅前',read:'えきまえ'},{emoji:'🗺️',word:'終点駅',read:'しゅうてんえき'},{emoji:'🎫',word:'駅員',read:'えきいん'}], hint:'「馬」が止まる所。昔は馬が使われていた！', strokes:14 },
+  '線': { reading:'せん', on:'セン', kun:'', meaning:'ライン・糸のような細い形', examples:[{emoji:'🚃',word:'路線',read:'ろせん'},{emoji:'✏️',word:'直線',read:'ちょくせん'},{emoji:'🗺️',word:'線路',read:'せんろ'}], hint:'糸（糸へん）で細い道を表す！', strokes:15 },
+  '工': { reading:'こう・く', on:'コウ・ク', kun:'', meaning:'工作・仕事', examples:[{emoji:'🏭',word:'工場',read:'こうじょう'},{emoji:'🔨',word:'工作',read:'こうさく'},{emoji:'👷',word:'工事',read:'こうじ'}], hint:'天と地を人がつなぐ形！', strokes:3 },
+  '作': { reading:'つくる・さく', on:'サク・サ', kun:'つくる', meaning:'作る・制作', examples:[{emoji:'🎨',word:'作品',read:'さくひん'},{emoji:'🔨',word:'工作',read:'こうさく'},{emoji:'📚',word:'作文',read:'さくぶん'}], hint:'人が加工する（イ＋乍）形！', strokes:7 },
+  '力': { reading:'ちから・りょく', on:'リョク・リキ', kun:'ちから', meaning:'力・パワー', examples:[{emoji:'💪',word:'力持ち',read:'ちからもち'},{emoji:'⚡',word:'電力',read:'でんりょく'},{emoji:'🔋',word:'体力',read:'たいりょく'}], hint:'腕を曲げた形！', strokes:2 },
+  '動': { reading:'うごく・どう', on:'ドウ', kun:'うごく', meaning:'動く・移動', examples:[{emoji:'🏃',word:'運動',read:'うんどう'},{emoji:'🔧',word:'自動',read:'じどう'},{emoji:'🌊',word:'動く',read:'うごく'}], hint:'重い（重）を力（力）で動かす！', strokes:11 },
+  '手': { reading:'て・しゅ', on:'シュ', kun:'て', meaning:'手・てのひら', examples:[{emoji:'🖐',word:'手紙',read:'てがみ'},{emoji:'👏',word:'拍手',read:'はくしゅ'},{emoji:'✌️',word:'手首',read:'てくび'}], hint:'指を広げた手の形！', strokes:4 },
+  '紙': { reading:'かみ・し', on:'シ', kun:'かみ', meaning:'紙・用紙', examples:[{emoji:'📄',word:'手紙',read:'てがみ'},{emoji:'📰',word:'新聞紙',read:'しんぶんし'},{emoji:'🎀',word:'包装紙',read:'ほうそうし'}], hint:'糸（糸へん）と氏。糸から作られた紙！', strokes:10 },
+  '書': { reading:'かく・しょ', on:'ショ', kun:'かく', meaning:'書く・文字を記す', examples:[{emoji:'✏️',word:'書く',read:'かく'},{emoji:'📚',word:'図書',read:'としょ'},{emoji:'📖',word:'教科書',read:'きょうかしょ'}], hint:'筆で書く様子の形！', strokes:10 },
+  '読': { reading:'よむ・どく', on:'ドク', kun:'よむ', meaning:'読む・読書', examples:[{emoji:'📖',word:'読む',read:'よむ'},{emoji:'📚',word:'読書',read:'どくしょ'},{emoji:'📰',word:'音読',read:'おんどく'}], hint:'言葉（言）を売（売）り物のように伝える！', strokes:14 },
+  '文': { reading:'もじ・ぶん', on:'ブン・モン', kun:'', meaning:'文字・文章', examples:[{emoji:'📝',word:'文字',read:'もじ'},{emoji:'📄',word:'文章',read:'ぶんしょう'},{emoji:'📚',word:'作文',read:'さくぶん'}], hint:'胸に模様（入れ墨）を入れた人の形！', strokes:4 },
+  '字': { reading:'じ', on:'ジ', kun:'', meaning:'文字・字', examples:[{emoji:'✏️',word:'文字',read:'もじ'},{emoji:'📝',word:'漢字',read:'かんじ'},{emoji:'🔤',word:'数字',read:'すうじ'}], hint:'屋根（宀）の下で子どもが学ぶ！', strokes:6 },
+  '話': { reading:'はなす・わ', on:'ワ', kun:'はなす・はなし', meaning:'話す・会話', examples:[{emoji:'💬',word:'話す',read:'はなす'},{emoji:'📞',word:'電話',read:'でんわ'},{emoji:'🗣',word:'会話',read:'かいわ'}], hint:'言葉（言）と舌（舌）。舌で話す！', strokes:13 },
+  '声': { reading:'こえ・せい', on:'セイ', kun:'こえ', meaning:'声・音声', examples:[{emoji:'🎤',word:'声',read:'こえ'},{emoji:'🔊',word:'音声',read:'おんせい'},{emoji:'📢',word:'大声',read:'おおごえ'}], hint:'耳に響く音の形！', strokes:7 },
+  '聞': { reading:'きく・ぶん', on:'ブン', kun:'きく', meaning:'聞く・耳にする', examples:[{emoji:'👂',word:'聞く',read:'きく'},{emoji:'📰',word:'新聞',read:'しんぶん'},{emoji:'🎵',word:'聞こえる',read:'きこえる'}], hint:'門（門）の中で耳を澄ます！', strokes:14 },
+  '思': { reading:'おもう・し', on:'シ', kun:'おもう', meaning:'思う・考える', examples:[{emoji:'💭',word:'思う',read:'おもう'},{emoji:'❤️',word:'思い出',read:'おもいで'},{emoji:'🤔',word:'思考',read:'しこう'}], hint:'田（頭）と心（心）。頭と心で考える！', strokes:9 },
+  '知': { reading:'しる・ち', on:'チ', kun:'しる', meaning:'知る・知識', examples:[{emoji:'💡',word:'知る',read:'しる'},{emoji:'📚',word:'知識',read:'ちしき'},{emoji:'🏆',word:'知恵',read:'ちえ'}], hint:'矢（矢）と口（口）。矢のように素早く言葉を知る！', strokes:8 },
+  '友': { reading:'とも・ゆう', on:'ユウ', kun:'とも', meaning:'友だち', examples:[{emoji:'👫',word:'友だち',read:'ともだち'},{emoji:'🤝',word:'友人',read:'ゆうじん'},{emoji:'🌸',word:'親友',read:'しんゆう'}], hint:'二人の手（又）が重なる形！', strokes:4 },
+  '心': { reading:'こころ・しん', on:'シン', kun:'こころ', meaning:'心・気持ち', examples:[{emoji:'❤️',word:'心',read:'こころ'},{emoji:'🎵',word:'安心',read:'あんしん'},{emoji:'💪',word:'心強い',read:'こころづよい'}], hint:'心臓の形！鼓動が見える！', strokes:4 },
+  '右': { reading:'みぎ・う', on:'ウ', kun:'みぎ', meaning:'右・右側', examples:[{emoji:'👉',word:'右',read:'みぎ'},{emoji:'↪️',word:'右折',read:'うせつ'},{emoji:'✍️',word:'右手',read:'みぎて'}], hint:'右手（又）で口（口）に食べ物を運ぶ！', strokes:5 },
+  '左': { reading:'ひだり・さ', on:'サ', kun:'ひだり', meaning:'左・左側', examples:[{emoji:'👈',word:'左',read:'ひだり'},{emoji:'↩️',word:'左折',read:'させつ'},{emoji:'🤝',word:'左手',read:'ひだりて'}], hint:'左手（ナ）で工（工）具を持つ！', strokes:5 },
+  '上': { reading:'うえ・じょう', on:'ジョウ', kun:'うえ・あがる', meaning:'上・高い所', examples:[{emoji:'⬆️',word:'上',read:'うえ'},{emoji:'🎓',word:'上手',read:'じょうず'},{emoji:'🚀',word:'上がる',read:'あがる'}], hint:'線の上に点。上を示す！', strokes:3 },
+  '下': { reading:'した・か', on:'カ・ゲ', kun:'した・さがる', meaning:'下・低い所', examples:[{emoji:'⬇️',word:'下',read:'した'},{emoji:'🎒',word:'地下',read:'ちか'},{emoji:'📉',word:'下がる',read:'さがる'}], hint:'線の下に点。下を示す！', strokes:3 },
+  '前': { reading:'まえ・ぜん', on:'ゼン', kun:'まえ', meaning:'前・以前', examples:[{emoji:'⬆️',word:'前',read:'まえ'},{emoji:'🔤',word:'名前',read:'なまえ'},{emoji:'🕐',word:'以前',read:'いぜん'}], hint:'舟（舟）が前に進む形！', strokes:9 },
+  '後': { reading:'うしろ・ご', on:'ゴ', kun:'うしろ・あと', meaning:'後ろ・後で', examples:[{emoji:'⬇️',word:'後ろ',read:'うしろ'},{emoji:'🕰',word:'午後',read:'ごご'},{emoji:'📅',word:'後日',read:'ごじつ'}], hint:'小さな糸のもつれから遅れる！', strokes:9 },
+  '高': { reading:'たかい・こう', on:'コウ', kun:'たかい', meaning:'高い', examples:[{emoji:'🏔',word:'高い',read:'たかい'},{emoji:'📊',word:'最高',read:'さいこう'},{emoji:'🎓',word:'高校',read:'こうこう'}], hint:'高い建物（楼閣）の形！', strokes:10 },
+  '長': { reading:'ながい・ちょう', on:'チョウ', kun:'ながい', meaning:'長い・長さ', examples:[{emoji:'📏',word:'長い',read:'ながい'},{emoji:'🔝',word:'校長',read:'こうちょう'},{emoji:'📅',word:'長年',read:'ながねん'}], hint:'長い髪の人の形！', strokes:8 },
+  '広': { reading:'ひろい・こう', on:'コウ', kun:'ひろい', meaning:'広い・広大', examples:[{emoji:'🌍',word:'広い',read:'ひろい'},{emoji:'📢',word:'広告',read:'こうこく'},{emoji:'🏟',word:'広場',read:'ひろば'}], hint:'建物（广）が大きく広がる！', strokes:5 },
+  '多': { reading:'おおい・た', on:'タ', kun:'おおい', meaning:'多い・たくさん', examples:[{emoji:'💰',word:'多い',read:'おおい'},{emoji:'🔢',word:'多数',read:'たすう'},{emoji:'🌸',word:'多様',read:'たよう'}], hint:'夕（ゆうべ）が二つ。夜が多い！', strokes:6 },
+  '少': { reading:'すくない・しょう', on:'ショウ', kun:'すくない', meaning:'少ない・少し', examples:[{emoji:'🔢',word:'少し',read:'すこし'},{emoji:'📉',word:'少数',read:'しょうすう'},{emoji:'👦',word:'少年',read:'しょうねん'}], hint:'小（小）に一本足す。少しだけ！', strokes:4 },
+  '半': { reading:'はん', on:'ハン', kun:'なかば', meaning:'半分・なかば', examples:[{emoji:'🕕',word:'半分',read:'はんぶん'},{emoji:'🕧',word:'一時半',read:'いちじはん'},{emoji:'🤔',word:'半分こ',read:'はんぶんこ'}], hint:'牛を二つに分けた形！', strokes:5 },
+  '分': { reading:'わける・ぶん', on:'ブン・フン', kun:'わける', meaning:'分ける・分数', examples:[{emoji:'✂️',word:'分ける',read:'わける'},{emoji:'🕐',word:'分',read:'ふん'},{emoji:'📊',word:'半分',read:'はんぶん'}], hint:'刀（刀）で二つに分ける！', strokes:4 },
+  '合': { reading:'あう・ごう', on:'ゴウ', kun:'あう', meaning:'合う・一致', examples:[{emoji:'🤝',word:'合う',read:'あう'},{emoji:'🏆',word:'試合',read:'しあい'},{emoji:'📐',word:'合計',read:'ごうけい'}], hint:'フタ（ヘ）と器（口）が合わさる！', strokes:6 },
+  '同': { reading:'おなじ・どう', on:'ドウ', kun:'おなじ', meaning:'同じ・同一', examples:[{emoji:'👯',word:'同じ',read:'おなじ'},{emoji:'🏫',word:'同学年',read:'どうがくねん'},{emoji:'🔄',word:'同時',read:'どうじ'}], hint:'同じ枠（囗）に入る形！', strokes:6 },
+  '語': { reading:'ご', on:'ゴ', kun:'かたる', meaning:'言語・語る', examples:[{emoji:'🗣',word:'言語',read:'げんご'},{emoji:'🇯🇵',word:'日本語',read:'にほんご'},{emoji:'💬',word:'物語',read:'ものがたり'}], hint:'言葉（言）の語り合い（吾）！', strokes:14 },
+  '言': { reading:'いう・げん', on:'ゲン', kun:'いう', meaning:'言う・言葉', examples:[{emoji:'💬',word:'言う',read:'いう'},{emoji:'🗣',word:'言語',read:'げんご'},{emoji:'📢',word:'一言',read:'ひとこと'}], hint:'口（口）から言葉が出る形！', strokes:7 },
 };
 
 const EPISODES = [
@@ -736,6 +763,8 @@ const EPISODES = [
       { text:'商店街の看板には漢字がいっぱい。「[東]口商店街」「[電]気屋」「[車]屋」。', emoji:'🏪' },
       { text:'りくは看板の漢字を全部読んでみた。全部わかった！', emoji:'😄' },
       { text:'「漢字がわかると、いろんなものが読めるんだ！」りくは嬉しくなった。', emoji:'🌟' },
+      { text:'商店街の終わりに、古い本屋があった。入口の看板に「[東]西[南][北]本舗」と書いてある。すごい！今日習った漢字が全部ある！', emoji:'📚' },
+      { text:'本屋のおじいさんが言った。「方角を知ると、地図が読めるようになるよ。」りくは次の冒険への地図をもらった！', emoji:'🗺️' },
     ],
     quiz:[
       { q:'「電気屋」の「電」の読みは？', big:'電', choices:['でん','しゃ','えき','きた'], ans:0, kanjiId:'電' },
@@ -767,7 +796,9 @@ const EPISODES = [
     pages:[
       { text:'「[電]気が来ていないぞ！」工場長が叫んだ。', emoji:'⚡' },
       { text:'りくは回路図を見た。「[電][力]が弱い。もっと[力]を上げなくては！」', emoji:'🔋' },
+      { text:'りくは工場の奥に走った。大きなスイッチが見える。「[力]を込めて！」', emoji:'💪' },
       { text:'スイッチを入れると機械が[動]き始めた！みんなが歓声をあげた。', emoji:'🎉' },
+      { text:'「さすが！[電]気のしくみがわかるなんてすごいね」と工場長がほめてくれた。', emoji:'🏆' },
     ],
     quiz:[
       { q:'「電力」の読みは？', big:'電力', choices:['でんりょく','でんき','ちから','でんわ'], ans:0, kanjiId:'電' },
@@ -782,6 +813,8 @@ const EPISODES = [
     pages:[
       { text:'「[工作]、ついに完成！」りくが叫ぶと、機械が見事に[動]き出した。', emoji:'🎊' },
       { text:'「すごい！自分で[作]ったんだ」。りくの胸が誇りで満たされた。', emoji:'🏆' },
+      { text:'工場のみんながりくの作品を囲んだ。「[工]場の職人みたいだ！」', emoji:'👷' },
+      { text:'「[作]り上げる力、もらいました」りくは工場長に頭を下げた。', emoji:'🙏' },
       { text:'「これをおじいちゃんに話そう！」りくはもう電話が楽しみでたまらない。', emoji:'📞' },
     ],
     quiz:[
@@ -794,11 +827,13 @@ const EPISODES = [
   // ─── 手紙とつながり ───
   {
     id:'ep7', theme:'tegami', num:1, title:'おじいちゃんへ',
-    kanjiIds:['手','紙','書'],
+    kanjiIds:['手','紙','書','読'],
     pages:[
-      { text:'りくは[手紙]を書くことにした。「[東]の方向に住んでいるおじいちゃんへ。」', emoji:'✉️' },
-      { text:'「[書]くって難しい…」でも一文字ずつ、ゆっくり[書]いた。', emoji:'✏️' },
-      { text:'「[手紙]が書けた！」送ったらおじいちゃん、きっと喜んでくれるな。', emoji:'💌' },
+      { text:'りくのポストに不思議な[手紙]が届いた。差出人の名前は…「謎の漢字たんてい」！', emoji:'✉️' },
+      { text:'「[読]んでみよう」。便箋を広げると、そこには漢字のパズルが書いてあった。', emoji:'🔍' },
+      { text:'「[書]いてある言葉を全部[読]めたら、宝の場所がわかる」。りくは集中した。', emoji:'✏️' },
+      { text:'「[手]紙の[文]字、全部わかった！」りくは[書]かれた地図を解読した。', emoji:'💡' },
+      { text:'「[手紙]が書けた！返事を[書]こう！」りくは胸をはずませながら、ペンを握った。', emoji:'💌' },
     ],
     quiz:[
       { q:'「手紙」の読みは？', big:'手紙', choices:['てがみ','てし','しゅし','てかみ'], ans:0, kanjiId:'手' },
@@ -809,10 +844,12 @@ const EPISODES = [
   },
   {
     id:'ep8', theme:'tegami', num:2, title:'日記の一ページ',
-    kanjiIds:['書','手','電'],
+    kanjiIds:['書','手','電','話','文'],
     pages:[
       { text:'「今日は[電車]で[東]の駅まで行った」りくは日記に[書]いた。', emoji:'📓' },
       { text:'漢字が[書]けると、日記がずっとかっこよくなる！', emoji:'✏️' },
+      { text:'「[話]を書き留めておくって大事だな」りくは、今日あった[話]を細かく記した。', emoji:'📝' },
+      { text:'日記の[文]章が増えてきた。「[文]字が並ぶと、ちゃんとした日記みたい！」', emoji:'📖' },
       { text:'「ぼくの日記、もう[電]も[東]も書けるぞ！」りくは誇らしかった。', emoji:'🌟' },
     ],
     quiz:[
@@ -824,11 +861,13 @@ const EPISODES = [
   },
   {
     id:'ep9', theme:'tegami', num:3, title:'テレビ電話の前に',
-    kanjiIds:['電','手','書'],
+    kanjiIds:['電','手','書','友','思','心'],
     pages:[
       { text:'「おじいちゃんとの[電]話は今日だ！」りくはワクワクした。', emoji:'📱' },
       { text:'「見せたいものを準備しよう」。りくは今月[書]いた漢字を[手紙]にまとめた。', emoji:'✉️' },
-      { text:'「おじいちゃん、ぼく[電車]も[東]も[工作]も書けるようになったよ！」', emoji:'🌟' },
+      { text:'りくは[友]だちから励ましの[手紙]をもらったことを[思]い出した。「[友]だちって、いいな」', emoji:'👫' },
+      { text:'「[心]を込めて書いた漢字を、おじいちゃんに見せよう」りくは[思]った。', emoji:'❤️' },
+      { text:'「おじいちゃん、ぼく[電車]も[東]も[工作]も[書]けるようになったよ！」[心]がじんわり温かくなった。', emoji:'🌟' },
     ],
     quiz:[
       { q:'「電話」の読みは？', big:'電話', choices:['でんわ','でんき','てがみ','でんしゃ'], ans:0, kanjiId:'電' },
@@ -1003,6 +1042,36 @@ function startEpisode(epId) {
   showScreen('screen-story');
 }
 
+// ─── Furigana helper ───────────────────────────
+function addFurigana(text) {
+  // Replace kanji NOT already inside [brackets] with ruby tags
+  // First, protect [bracketed] kanji from ruby replacement
+  const placeholders = [];
+  let protected_text = text.replace(/\[(.+?)\]/g, (m, k) => {
+    placeholders.push(m);
+    return ` ${placeholders.length - 1} `;
+  });
+  // Add ruby to standalone kanji in KANJI_DB
+  for (const [kanji, data] of Object.entries(KANJI_DB)) {
+    const reading = data.kun || data.reading.split('・')[0];
+    const regex = new RegExp(kanji, 'g');
+    protected_text = protected_text.replace(regex,
+      `<ruby>${kanji}<rt>${reading}</rt></ruby>`);
+  }
+  // Restore placeholders
+  return protected_text.replace(/ (\d+) /g, (m, i) => placeholders[parseInt(i)]);
+}
+
+// ─── Text size state ─────────────────────────────
+let storyTextLarge = false;
+function toggleTextSize() {
+  storyTextLarge = !storyTextLarge;
+  const wrap = document.querySelector('.story-text-wrap');
+  if (wrap) wrap.style.fontSize = storyTextLarge ? '22px' : '18px';
+  const btn = document.getElementById('text-size-btn');
+  if (btn) btn.textContent = storyTextLarge ? '文字▼' : '文字▲';
+}
+
 function renderStoryPage() {
   const ep = cur.episode;
   const page = ep.pages[cur.storyPage];
@@ -1026,9 +1095,10 @@ function renderStoryPage() {
     return `<span class="kanji-tap">${k}</span>`;
   });
 
+  const fontSize = storyTextLarge ? '22px' : '18px';
   document.getElementById('story-page-content').innerHTML = `
     <div class="story-illustration">${page.emoji}</div>
-    <div class="story-text-wrap">${html}</div>`;
+    <div class="story-text-wrap" style="font-size:${fontSize}">${html}</div>`;
 
   // Next button
   const isLast = cur.storyPage >= total - 1;
@@ -1092,6 +1162,15 @@ function startQuiz() {
   cur.quizResults = [];
   showScreen('screen-quiz');
   renderQuiz();
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function renderQuiz() {
