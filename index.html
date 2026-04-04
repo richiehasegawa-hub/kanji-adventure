@@ -7,206 +7,96 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --blue:    #3A6EA8;
+  --blue: #3A6EA8;
   --blue-light: #EBF3FB;
-  --blue-dark:  #1A4A7A;
-  --orange:  #F5A623;
-  --orange-light: #FFF8F0;
-  --green:   #4CAF50;
-  --green-light: #E8F5E9;
-  --red:     #E57373;
-  --parchment: #FDF6E3;
-  --gray-1:  #F5F5F5;
-  --gray-2:  #E0E0E0;
-  --gray-3:  #9E9E9E;
-  --text:    #2D2D2D;
-  --text-light: #666;
-  --white:   #FFFFFF;
-  --shadow:  0 2px 12px rgba(0,0,0,.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,.18);
-  --radius:  16px;
-  --radius-sm: 10px;
+  --blue-dark: #1A4A7A;
+  --orange: #F5A623;
+  --gray-1: #F5F5F5;
+  --gray-2: #E0E0E0;
+  --gray-3: #9E9E9E;
+  --text: #2D2D2D;
+  --white: #FFFFFF;
+  --shadow: 0 2px 12px rgba(0,0,0,.12);
+  --radius: 16px;
 }
-html, body { height: 100%; width: 100%; font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', 'Yu Gothic', sans-serif; font-size: 16px; color: var(--text); background: var(--gray-1); overflow-x: hidden; }
-button { cursor: pointer; border: none; font-family: inherit; }
-input { font-family: inherit; }
+html, body { height: 100%; width: 100%; font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', 'Yu Gothic', sans-serif; font-size: 18px; color: var(--text); background: var(--gray-1); overflow-x: hidden; font-weight: 600; }
+button { cursor: pointer; border: none; font-family: inherit; font-weight: 600; }
+input { font-family: inherit; font-weight: 600; }
 #app { min-height: 100vh; display: flex; flex-direction: column; }
 .screen { display: none; flex-direction: column; min-height: 100vh; width: 100%; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; }
 .screen.active { display: flex; }
-.header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--white); border-bottom: 2px solid var(--blue-light); position: sticky; top: 0; z-index: 100; gap: 8px; }
-.header-title { font-size: 15px; font-weight: 700; color: var(--blue); flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border-radius: var(--radius); font-size: 16px; font-weight: 700; transition: all .2s; width: 100%; gap: 8px; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--white); border-bottom: 3px solid var(--blue-light); position: sticky; top: 0; z-index: 100; gap: 8px; }
+.header-title { font-size: 18px; font-weight: 800; color: var(--blue); flex: 1; text-align: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 16px 28px; border-radius: var(--radius); font-size: 18px; font-weight: 800; transition: all .2s; width: 100%; gap: 8px; }
 .btn-primary { background: var(--blue); color: var(--white); box-shadow: 0 4px 0 var(--blue-dark); }
-.btn-primary:hover { transform: translateY(-1px); background: var(--blue-dark); }
+.btn-primary:hover { transform: translateY(-1px); }
 .btn-primary:active { transform: translateY(2px); box-shadow: none; }
-.btn-orange { background: var(--orange); color: var(--white); box-shadow: 0 4px 0 #C47F0E; }
-.btn-orange:hover { transform: translateY(-1px); }
-.btn-orange:active { transform: translateY(2px); box-shadow: none; }
-.content { flex: 1; overflow-y: auto; padding: 16px; }
-.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
-#screen-welcome { background: linear-gradient(160deg, #1A4A7A 0%, #3A6EA8 60%, #5A9EE8 100%); justify-content: center; align-items: center; text-align: center; padding: 32px 24px; }
-.welcome-logo { font-size: 56px; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
+.btn-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--blue-light); color: var(--blue); font-size: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.content { flex: 1; overflow-y: auto; padding: 20px; }
+#screen-welcome { background: linear-gradient(160deg, #1A4A7A 0%, #3A6EA8 60%, #5A9EE8 100%); justify-content: center; align-items: center; text-align: center; padding: 40px 24px; }
+.welcome-logo { font-size: 72px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-.welcome-title { font-size: 22px; font-weight: 900; color: var(--white); text-shadow: 0 2px 8px rgba(0,0,0,.3); margin-bottom: 4px; line-height: 1.3; }
-.welcome-sub { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 32px; }
-.welcome-form { width: 100%; max-width: 320px; }
-.welcome-input { width: 100%; padding: 14px 18px; border-radius: var(--radius); border: 2px solid transparent; font-size: 17px; text-align: center; background: rgba(255,255,255,.95); margin-bottom: 14px; outline: none; }
+.welcome-title { font-size: 28px; font-weight: 900; color: var(--white); text-shadow: 0 2px 8px rgba(0,0,0,.3); margin-bottom: 8px; line-height: 1.4; }
+.welcome-sub { font-size: 16px; color: rgba(255,255,255,.9); margin-bottom: 40px; font-weight: 700; }
+.welcome-form { width: 100%; max-width: 340px; }
+.welcome-input { width: 100%; padding: 16px 20px; border-radius: var(--radius); border: 2px solid transparent; font-size: 18px; text-align: center; background: rgba(255,255,255,.95); margin-bottom: 16px; outline: none; font-weight: 600; }
 .welcome-input:focus { border-color: var(--orange); }
-.welcome-hint { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 16px; }
-#screen-home .home-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue)); color: var(--white); padding: 16px 16px 24px; }
-.home-greeting { font-size: 13px; opacity: .85; }
-.home-name { font-size: 22px; font-weight: 800; margin-top: 2px; }
-.streak-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,.2); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px; }
-.area-card { margin: 0 16px 12px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s, box-shadow .2s; position: relative; }
-.area-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+#screen-home .home-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue)); color: var(--white); padding: 20px 16px 28px; }
+.home-greeting { font-size: 15px; opacity: .85; font-weight: 700; }
+.home-name { font-size: 28px; font-weight: 900; margin-top: 4px; }
+.area-card { margin: 0 0 16px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s, box-shadow .2s; position: relative; border: 3px solid transparent; }
+.area-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.15); border-color: rgba(255,255,255,.5); }
 .area-card.locked { opacity: .6; cursor: not-allowed; }
-.area-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
-.area-emoji { font-size: 32px; }
+.area-header { padding: 20px; display: flex; align-items: center; gap: 16px; }
+.area-emoji { font-size: 44px; flex-shrink: 0; }
 .area-info { flex: 1; }
-.area-name { font-size: 17px; font-weight: 800; color: var(--white); }
-.area-sub { font-size: 12px; color: rgba(255,255,255,.8); margin-top: 2px; }
-.area-stars { padding: 10px 16px; background: rgba(255,255,255,.15); }
-.star-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
-.ep-pip { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+.area-name { font-size: 20px; font-weight: 900; color: var(--white); }
+.area-sub { font-size: 14px; color: rgba(255,255,255,.85); margin-top: 4px; font-weight: 700; }
+.area-stars { padding: 12px 20px; background: rgba(255,255,255,.15); }
+.star-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+.ep-pip { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; }
 .ep-pip.done { background: var(--orange); color: var(--white); }
 .ep-pip.open { background: rgba(255,255,255,.3); color: var(--white); }
-.ep-pip.lock { background: rgba(0,0,0,.2); color: rgba(255,255,255,.5); }
-.area-machi .area-header { background: linear-gradient(135deg,#2C6FBF, #4A9ED4); }
-.area-machi .area-stars { background: rgba(44,111,191,.15); }
-.area-kourjou .area-header { background: linear-gradient(135deg,#2E7D32, #4CAF50); }
-.area-kourjou .area-stars { background: rgba(46,125,50,.15); }
-.area-tegami .area-header { background: linear-gradient(135deg,#7B1FA2, #AB47BC); }
-.area-tegami .area-stars { background: rgba(123
-cd /tmp/kanji-adventure && cat > upload_complete.sh << 'SCRIPTEOF'
-#!/bin/bash
-# 完全版HTMLを作成してGitHubにアップロード
-cat > index.html << 'HTMLEOF'
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ものがたり漢字アドベンチャー</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --blue:    #3A6EA8;
-  --blue-light: #EBF3FB;
-  --blue-dark:  #1A4A7A;
-  --orange:  #F5A623;
-  --orange-light: #FFF8F0;
-  --green:   #4CAF50;
-  --green-light: #E8F5E9;
-  --red:     #E57373;
-  --parchment: #FDF6E3;
-  --gray-1:  #F5F5F5;
-  --gray-2:  #E0E0E0;
-  --gray-3:  #9E9E9E;
-  --text:    #2D2D2D;
-  --text-light: #666;
-  --white:   #FFFFFF;
-  --shadow:  0 2px 12px rgba(0,0,0,.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,.18);
-  --radius:  16px;
-  --radius-sm: 10px;
-}
-html, body { height: 100%; width: 100%; font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', 'Yu Gothic', sans-serif; font-size: 16px; color: var(--text); background: var(--gray-1); overflow-x: hidden; }
-button { cursor: pointer; border: none; font-family: inherit; }
-input { font-family: inherit; }
-#app { min-height: 100vh; display: flex; flex-direction: column; }
-.screen { display: none; flex-direction: column; min-height: 100vh; width: 100%; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; }
-.screen.active { display: flex; }
-.header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--white); border-bottom: 2px solid var(--blue-light); position: sticky; top: 0; z-index: 100; gap: 8px; }
-.header-title { font-size: 15px; font-weight: 700; color: var(--blue); flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border-radius: var(--radius); font-size: 16px; font-weight: 700; transition: all .2s; width: 100%; gap: 8px; }
-.btn-primary { background: var(--blue); color: var(--white); box-shadow: 0 4px 0 var(--blue-dark); }
-.btn-primary:hover { transform: translateY(-1px); background: var(--blue-dark); }
-.btn-primary:active { transform: translateY(2px); box-shadow: none; }
-.btn-orange { background: var(--orange); color: var(--white); box-shadow: 0 4px 0 #C47F0E; }
-.btn-orange:hover { transform: translateY(-1px); }
-.btn-orange:active { transform: translateY(2px); box-shadow: none; }
-.content { flex: 1; overflow-y: auto; padding: 16px; }
-.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
-#screen-welcome { background: linear-gradient(160deg, #1A4A7A 0%, #3A6EA8 60%, #5A9EE8 100%); justify-content: center; align-items: center; text-align: center; padding: 32px 24px; }
-.welcome-logo { font-size: 56px; margin-bottom: 8px; animation: float 3s ease-in-out infinite; }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-.welcome-title { font-size: 22px; font-weight: 900; color: var(--white); text-shadow: 0 2px 8px rgba(0,0,0,.3); margin-bottom: 4px; line-height: 1.3; }
-.welcome-sub { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 32px; }
-.welcome-form { width: 100%; max-width: 320px; }
-.welcome-input { width: 100%; padding: 14px 18px; border-radius: var(--radius); border: 2px solid transparent; font-size: 17px; text-align: center; background: rgba(255,255,255,.95); margin-bottom: 14px; outline: none; }
-.welcome-input:focus { border-color: var(--orange); }
-.welcome-hint { font-size: 12px; color: rgba(255,255,255,.7); margin-top: 16px; }
-#screen-home .home-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue)); color: var(--white); padding: 16px 16px 24px; }
-.home-greeting { font-size: 13px; opacity: .85; }
-.home-name { font-size: 22px; font-weight: 800; margin-top: 2px; }
-.streak-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,.2); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px; }
-.area-card { margin: 0 16px 12px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s, box-shadow .2s; position: relative; }
-.area-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.area-card.locked { opacity: .6; cursor: not-allowed; }
-.area-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
-.area-emoji { font-size: 32px; }
-.area-info { flex: 1; }
-.area-name { font-size: 17px; font-weight: 800; color: var(--white); }
-.area-sub { font-size: 12px; color: rgba(255,255,255,.8); margin-top: 2px; }
-.area-stars { padding: 10px 16px; background: rgba(255,255,255,.15); }
-.star-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
-.ep-pip { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-.ep-pip.done { background: var(--orange); color: var(--white); }
-.ep-pip.open { background: rgba(255,255,255,.3); color: var(--white); }
-.ep-pip.lock { background: rgba(0,0,0,.2); color: rgba(255,255,255,.5); }
-.area-machi .area-header { background: linear-gradient(135deg,#2C6FBF, #4A9ED4); }
-.area-machi .area-stars { background: rgba(44,111,191,.15); }
-.area-kourjou .area-header { background: linear-gradient(135deg,#2E7D32, #4CAF50); }
-.area-kourjou .area-stars { background: rgba(46,125,50,.15); }
-.area-tegami .area-header { background: linear-gradient(135deg,#7B1FA2, #AB47BC); }
-.area-tegami .area-stars { background: rgba(123,31,162,.15); }
-.ep-card { margin-bottom: 12px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s; }
-.ep-card:hover:not(.locked) { transform: translateY(-2px); }
-.ep-card.locked { opacity: .55; cursor: not-allowed; }
-.ep-card-inner { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--white); }
-.ep-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: var(--white); flex-shrink: 0; }
+.ep-card { margin-bottom: 16px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s; border: 3px solid transparent; background: var(--white); }
+.ep-card:hover:not(.locked) { transform: translateY(-2px); border-color: var(--blue); }
+.ep-card.locked { opacity: .5; cursor: not-allowed; }
+.ep-card-inner { display: flex; align-items: center; gap: 16px; padding: 18px 20px; }
+.ep-num { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: var(--white); flex-shrink: 0; }
 .ep-card-info { flex: 1; }
-.ep-card-title { font-size: 15px; font-weight: 700; }
-.ep-card-kanji { font-size: 13px; color: var(--gray-3); margin-top: 3px; }
-.ep-card-meta { font-size: 12px; color: var(--gray-3); margin-top: 3px; }
-.ep-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
-.ep-badge.done { background: var(--green-light); color: var(--green); }
-.ep-badge.open { background: var(--blue-light); color: var(--blue); }
-.ep-badge.lock { background: var(--gray-1); color: var(--gray-3); }
-.story-page { min-height: 100%; display: flex; flex-direction: column; background: var(--parchment); }
-.story-illustration { width: 100%; aspect-ratio: 16/9; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 64px; flex-shrink: 0; }
-.story-text-wrap { flex: 1; padding: 20px; font-size: 18px; line-height: 1.9; font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif; }
-.story-text-wrap .kanji-tap { color: var(--blue); text-decoration: underline; text-decoration-style: dotted; cursor: pointer; font-weight: 700; padding: 0 2px; }
-.story-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--white); border-top: 1px solid var(--gray-2); gap: 10px; }
-.page-dots { display: flex; gap: 6px; align-items: center; }
-.page-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-2); transition: background .2s; }
-.page-dot.active { background: var(--blue); width: 16px; border-radius: 4px; }
-.audio-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 20px; background: var(--blue-light); color: var(--blue); font-size: 13px; font-weight: 700; border: none; }
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: none; align-items: flex-end; }
-.overlay.open { display: flex; animation: fadeIn .2s; }
-@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-.bottom-sheet { width: 100%; max-width: 480px; margin: 0 auto; background: var(--white); border-radius: var(--radius) var(--radius) 0 0; padding: 12px 20px 32px; animation: slideUp .25s ease; max-height: 85vh; overflow-y: auto; }
-@keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
-.sheet-handle { width: 36px; height: 4px; background: var(--gray-2); border-radius: 2px; margin: 0 auto 16px; }
-.kanji-big { font-size: 72px; font-weight: 900; text-align: center; color: var(--blue-dark); line-height: 1; margin-bottom: 4px; }
-.kanji-reading { text-align: center; font-size: 16px; color: var(--gray-3); margin-bottom: 16px; }
-.kanji-examples { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-.kanji-ex-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--gray-1); border-radius: var(--radius-sm); }
-.kanji-ex-emoji { font-size: 24px; flex-shrink: 0; }
-.kanji-ex-text { font-size: 16px; font-weight: 700; }
+.ep-card-title { font-size: 18px; font-weight: 800; }
+.ep-card-ruby { font-size: 12px; color: var(--gray-3); margin-top: 2px; }
+.ep-badge { font-size: 13px; font-weight: 800; padding: 6px 12px; border-radius: 20px; flex-shrink: 0; background: var(--blue-light); color: var(--blue); }
+.ep-badge.done { background: #E8F5E9; color: #4CAF50; }
+.story-page { min-height: 100%; display: flex; flex-direction: column; background: #FDF6E3; }
+.story-illustration { width: 100%; aspect-ratio: 16/9; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 80px; flex-shrink: 0; }
+.story-text-wrap { flex: 1; padding: 24px; font-size: 20px; line-height: 2.0; font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif; font-weight: 500; }
+.ruby { font-size: 11px; display: ruby; }
+.kanji-tap { color: var(--blue); text-decoration: underline; text-decoration-style: dotted; cursor: pointer; font-weight: 800; padding: 2px 4px; border-radius: 4px; }
+.kanji-tap:hover { background: rgba(58, 110, 168, 0.1); }
+.story-nav { display: flex; gap: 12px; padding: 20px; background: var(--white); border-top: 2px solid var(--gray-2); }
+.nav-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; }
+.nav-btn-back { background: var(--gray-1); color: var(--text); }
+.nav-btn-complete { background: var(--blue); color: var(--white); }
+.kanji-big { font-size: 84px; font-weight: 900; text-align: center; color: var(--blue-dark); line-height: 1; margin-bottom: 8px; }
+.kanji-reading { text-align: center; font-size: 22px; color: var(--gray-3); margin-bottom: 20px; font-weight: 700; }
+.kanji-examples { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.kanji-ex-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--gray-1); border-radius: 12px; }
+.kanji-ex-emoji { font-size: 28px; flex-shrink: 0; }
+.kanji-ex-text { font-size: 18px; font-weight: 800; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; display: none; }
+.btn-icon.invisible { visibility: hidden; }
 </style>
 </head>
 <body>
 <div id="app">
   <div id="screen-welcome" class="screen active">
-    <div style="width:100%; max-width:320px;">
+    <div style="width:100%; max-width:360px;">
       <div class="welcome-logo">📖</div>
       <h1 class="welcome-title">ものがたり漢字<br>アドベンチャー</h1>
-      <p class="welcome-sub">漢字の世界へようこそ！冒険を始めましょう。</p>
+      <p class="welcome-sub">漢字の世界へようこそ！</p>
       <div class="welcome-form">
         <input type="text" id="playerName" class="welcome-input" placeholder="お名前を入力してください" maxlength="10">
-        <button class="btn btn-primary" onclick="startGame()">冒険開始</button>
-        <p class="welcome-hint">💡 お気に入りのお名前で登録できます</p>
+        <button class="btn btn-primary" onclick="startGame()" style="font-size:20px; padding:18px;">冒険開始</button>
       </div>
     </div>
   </div>
@@ -215,10 +105,9 @@ input { font-family: inherit; }
     <div class="home-header">
       <div class="home-greeting">いらっしゃいませ！</div>
       <div class="home-name" id="homePlayerName">冒険者</div>
-      <div class="streak-badge">🔥 連続: <span id="streakDays">0</span>日</div>
     </div>
     <div class="content">
-      <div style="font-size:13px; font-weight:700; color:var(--gray-3); text-transform:uppercase; letter-spacing:.5px; padding:16px 16px 8px; text-align:center;">📍 冒険地域を選択</div>
+      <div style="font-size:15px; font-weight:800; color:var(--gray-3); text-transform:uppercase; letter-spacing:.5px; padding:16px 0 12px; text-align:center;">📍 地域を選ぶ</div>
       <div id="areasContainer"></div>
     </div>
   </div>
@@ -244,58 +133,50 @@ input { font-family: inherit; }
   <div id="screen-kanji" class="screen">
     <div class="header">
       <button class="btn-icon" onclick="backScreen()">◀</button>
-      <div class="header-title">漢字詳細</div>
+      <div class="header-title">漢字を学ぼう</div>
       <div class="btn-icon invisible">✕</div>
     </div>
     <div class="content">
-      <div style="margin-top:20px;">
+      <div style="margin-top:28px;">
         <div class="kanji-big" id="kanjiDisplay">字</div>
         <div class="kanji-reading" id="kanjiReading">よみ</div>
         <div class="kanji-examples" id="kanjiExamples"></div>
-        <button class="btn btn-primary btn-gap" onclick="backScreen()">戻る</button>
+        <button class="btn btn-primary" onclick="backScreen()" style="margin-top:20px;">もどる</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="overlay" class="overlay" onclick="closeOverlay()"></div>
-
 <script>
-const KANJI_DB = {
-  'machi': [
-    { kanji: '街', reading: 'まち', examples: ['街道', '商街', '通り'] },
-    { kanji: '道', reading: 'どう', examples: ['道路', '茶道', '武道'] },
-    { kanji: '家', reading: 'いえ', examples: ['家族', '民家', 'うち'] }
-  ],
-  'koujou': [
-    { kanji: '工', reading: 'こう', examples: ['工事', '工場', '木工'] },
-    { kanji: '場', reading: 'ば', examples: ['工場', '駅', '広場'] },
-    { kanji: '作', reading: 'さく', examples: ['作業', '創作', '作る'] }
-  ],
-  'tegami': [
-    { kanji: '手', reading: 'て', examples: ['手紙', '握手', '手段'] },
-    { kanji: '紙', reading: 'かみ', examples: ['紙質', '新聞紙', '和紙'] },
-    { kanji: '文', reading: 'ぶん', examples: ['文字', '論文', 'テキスト'] }
-  ]
-};
+const AREAS = [
+  { id: 'machi', name: '街', ruby: 'まち', emoji: '🏘️', color: '#2C6FBF' },
+  { id: 'koujou', name: '工場', ruby: 'こうじょう', emoji: '🏭', color: '#2E7D32' },
+  { id: 'tegami', name: '手紙', ruby: 'てがみ', emoji: '💌', color: '#7B1FA2' }
+];
 
 const EPISODES = [
-  { id: 'machi-ep1', area: 'machi', num: 1, title: '街の出会い', kanji: ['街','道'] },
-  { id: 'machi-ep2', area: 'machi', num: 2, title: '商人との話', kanji: ['街','家'] },
-  { id: 'machi-ep3', area: 'machi', num: 3, title: '祭りの日', kanji: ['街','道'] },
-  { id: 'koujou-ep1', area: 'koujou', num: 1, title: '工場見学', kanji: ['工','場'] },
-  { id: 'koujou-ep2', area: 'koujou', num: 2, title: '職人の技', kanji: ['工','作'] },
-  { id: 'koujou-ep3', area: 'koujou', num: 3, title: '完成', kanji: ['場','作'] },
-  { id: 'tegami-ep1', area: 'tegami', num: 1, title: '手紙が届く', kanji: ['手','紙'] },
-  { id: 'tegami-ep2', area: 'tegami', num: 2, title: '返事を書く', kanji: ['手','文'] },
-  { id: 'tegami-ep3', area: 'tegami', num: 3, title: '絆', kanji: ['手','紙','文'] }
+  { id: 'machi-ep1', area: 'machi', num: 1, title: '街の出会い', ruby: 'まちのであい', kanji: ['街','道'] },
+  { id: 'machi-ep2', area: 'machi', num: 2, title: '商人との話', ruby: 'しょうにんとのはなし', kanji: ['街','家'] },
+  { id: 'machi-ep3', area: 'machi', num: 3, title: '祭りの日', ruby: 'まつりのひ', kanji: ['街','道'] },
+  { id: 'koujou-ep1', area: 'koujou', num: 1, title: '工場見学', ruby: 'こうじょうけんがく', kanji: ['工','場'] },
+  { id: 'koujou-ep2', area: 'koujou', num: 2, title: '職人の技', ruby: 'しょくにんのわざ', kanji: ['工','作'] },
+  { id: 'koujou-ep3', area: 'koujou', num: 3, title: '完成', ruby: 'かんせい', kanji: ['場','作'] },
+  { id: 'tegami-ep1', area: 'tegami', num: 1, title: '手紙が届く', ruby: 'てがみがとどく', kanji: ['手','紙'] },
+  { id: 'tegami-ep2', area: 'tegami', num: 2, title: '返事を書く', ruby: 'へんじをかく', kanji: ['手','文'] },
+  { id: 'tegami-ep3', area: 'tegami', num: 3, title: '絆', ruby: 'きずな', kanji: ['手','紙','文'] }
 ];
 
-const AREAS = [
-  { id: 'machi', name: '街', emoji: '🏘️', color: '#2C6FBF' },
-  { id: 'koujou', name: '工場', emoji: '🏭', color: '#2E7D32' },
-  { id: 'tegami', name: '手紙', emoji: '💌', color: '#7B1FA2' }
-];
+const KANJI_DB = {
+  '街': { reading: 'がい', ruby: 'がい', examples: ['街道（かいどう）', '街中（まちなか）'] },
+  '道': { reading: 'どう', ruby: 'どう', examples: ['道路（どうろ）', '茶道（ちゃどう）'] },
+  '家': { reading: 'か', ruby: 'か', examples: ['家族（かぞく）', '民家（みんか）'] },
+  '工': { reading: 'こう', ruby: 'こう', examples: ['工事（こうじ）', '工場（こうじょう）'] },
+  '場': { reading: 'ば', ruby: 'ば', examples: ['工場（こうじょう）', '広場（ひろば）'] },
+  '作': { reading: 'さく', ruby: 'さく', examples: ['作業（さぎょう）', '作る（つくる）'] },
+  '手': { reading: 'て', ruby: 'て', examples: ['手紙（てがみ）', '握手（あくしゅ）'] },
+  '紙': { reading: 'かみ', ruby: 'かみ', examples: ['紙質（ししつ）', '和紙（わし）'] },
+  '文': { reading: 'ぶん', ruby: 'ぶん', examples: ['文字（もじ）', '論文（ろんぶん）'] }
+};
 
 let state = { screen: 'welcome', playerName: '', currentArea: null, currentEpisode: null, completedEpisodes: [] };
 
@@ -321,7 +202,8 @@ function renderHome() {
         <div class="area-emoji">${area.emoji}</div>
         <div class="area-info">
           <div class="area-name">${area.name}</div>
-          <div class="area-sub">エピソード 3話</div>
+          <div style="font-size:13px; color:rgba(255,255,255,.7);">ふりがな：${area.ruby}</div>
+          <div class="area-sub" style="margin-top:6px;">3つのお話</div>
         </div>
       </div>
       <div class="area-stars">
@@ -339,7 +221,7 @@ function renderHome() {
 function selectArea(areaId) {
   state.currentArea = areaId;
   const area = AREAS.find(a => a.id === areaId);
-  document.getElementById('epAreaName').textContent = area.name;
+  document.getElementById('epAreaName').textContent = area.name + '（' + area.ruby + '）';
   showScreen('episodes');
   renderEpisodes();
 }
@@ -352,9 +234,9 @@ function renderEpisodes() {
         <div class="ep-num" style="background:${AREAS.find(a => a.id === ep.area).color}">${ep.num}</div>
         <div class="ep-card-info">
           <div class="ep-card-title">${ep.title}</div>
-          <div class="ep-card-meta">学習漢字: ${ep.kanji.join(', ')}</div>
+          <div class="ep-card-ruby">ふりがな：${ep.ruby}</div>
         </div>
-        <div class="ep-badge ${state.completedEpisodes.includes(ep.id) ? 'done' : 'open'}">${state.completedEpisodes.includes(ep.id) ? '完了' : '開始'}</div>
+        <div class="ep-badge ${state.completedEpisodes.includes(ep.id) ? 'done' : ''}">${state.completedEpisodes.includes(ep.id) ? '完了' : '開始'}</div>
       </div>
     </div>
   `).join('');
@@ -364,16 +246,21 @@ function renderEpisodes() {
 function selectEpisode(epId) {
   state.currentEpisode = epId;
   const ep = EPISODES.find(e => e.id === epId);
-  const story = ep.title + 'のストーリーが展開します。各漢字をタップして詳しく学びましょう。' + ep.kanji.map((k, i) => `${i+1}. ${k}`).join(' ');
   document.getElementById('storyTitle').textContent = ep.title;
+  
+  const story = 'さあ、「' + ep.title + '」の冒険がはじまります。\n\nした漢字をタップすると、くわしく学べます。';
+  
   document.getElementById('storyPage').innerHTML = `
     <div class="story-illustration">📖</div>
     <div class="story-text-wrap">
-      <p>${story}</p>
-      ${ep.kanji.map(k => `<span class="kanji-tap" onclick="showKanjiDetail('${k}')">${k}</span>`).join(' ')}
+      ${story.split('\n').map(line => `<p style="margin-bottom:16px;">${line}</p>`).join('')}
+      <p style="margin-top:24px; font-size:18px;">
+        ${ep.kanji.map(k => `<span class="kanji-tap" onclick="showKanjiDetail('${k}')">${k}</span>`).join('　')}
+      </p>
     </div>
     <div class="story-nav">
-      <button class="btn btn-primary" style="flex:1;" onclick="completeEpisode('${epId}')">完了</button>
+      <button class="nav-btn nav-btn-back" onclick="backScreen()">◀ もどる</button>
+      <button class="nav-btn nav-btn-complete" onclick="completeEpisode('${epId}')">完了 ✓</button>
     </div>
   `;
   showScreen('story');
@@ -388,14 +275,13 @@ function completeEpisode(epId) {
 }
 
 function showKanjiDetail(kanji) {
-  const db = Object.values(KANJI_DB).flat();
-  const entry = db.find(e => e.kanji === kanji);
+  const entry = KANJI_DB[kanji];
   if (!entry) return;
-  document.getElementById('kanjiDisplay').textContent = entry.kanji;
-  document.getElementById('kanjiReading').textContent = entry.reading;
+  document.getElementById('kanjiDisplay').textContent = kanji;
+  document.getElementById('kanjiReading').textContent = '読み方：' + entry.ruby;
   document.getElementById('kanjiExamples').innerHTML = entry.examples.map(ex => `
     <div class="kanji-ex-row">
-      <div class="kanji-ex-emoji">✨</div>
+      <div class="kanji-ex-emoji">📖</div>
       <div class="kanji-ex-text">${ex}</div>
     </div>
   `).join('');
@@ -405,10 +291,6 @@ function showKanjiDetail(kanji) {
 function backScreen() {
   if (state.screen === 'kanji' || state.screen === 'story') showScreen('episodes');
   else if (state.screen === 'episodes') showScreen('home');
-}
-
-function closeOverlay() {
-  document.getElementById('overlay').classList.remove('open');
 }
 
 window.addEventListener('load', () => {
