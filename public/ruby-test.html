@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ルビ テスト</title>
+<style>
+  body { background: #1A1A2E; color: white; font-size: 22px; padding: 24px; font-family: sans-serif; }
+  .card { background: #FFFBF0; color: #1A1A1A; padding: 24px; border-radius: 12px; line-height: 3.0; }
+  rt { font-size: 0.5em; color: #5C6BC0; }
+  button { font-size: 18px; padding: 12px 24px; border-radius: 12px;
+           border: 2px solid #5C6BC0; background: #5C6BC0;
+           color: white; cursor: pointer; margin-bottom: 24px;
+           min-height: 48px; display: block; }
+  #status { color: #FFD700; margin-bottom: 16px; font-size: 16px; }
+</style>
+</head>
+<body>
+<h2 style="color:#FFD700">ルビ 動作テスト（純粋HTML）</h2>
+<div id="status">✅ JavaScript: 動作中</div>
+
+<button onclick="toggleFurigana()">あ ふりがな：きりかえ</button>
+
+<div class="card">
+  <p>
+    <ruby>工場<rt id="rt1">こうじょう</rt></ruby>に
+    <ruby>迷<rt id="rt2">まよ</rt></ruby>い込んだ。
+  </p>
+  <p>
+    <ruby>手<rt id="rt3">て</rt></ruby>・
+    <ruby>足<rt id="rt4">あし</rt></ruby>・
+    <ruby>目<rt id="rt5">め</rt></ruby>
+  </p>
+  <p>
+    漢字タップテスト：
+    <span onclick="alert('タップできました！')"
+          style="color:#5C6BC0; text-decoration:underline; cursor:pointer;">
+      ここをタップ
+    </span>
+  </p>
+</div>
+
+<script>
+document.getElementById('status').textContent = '✅ JavaScript: 動作中';
+var showing = true;
+function toggleFurigana() {
+  showing = !showing;
+  var rts = document.querySelectorAll('rt');
+  rts.forEach(function(rt) {
+    rt.style.visibility = showing ? 'visible' : 'hidden';
+  });
+  document.querySelector('button').textContent =
+    'あ ふりがな：' + (showing ? 'ひょうじ中' : 'かくす');
+}
+</script>
+</body>
+</html>

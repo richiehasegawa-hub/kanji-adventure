@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ものがたり漢字アドベンチャー — グローバルスタイル
+   Tailwind CSS v4 (@theme ベース設定)
+   ============================================================ */
+
+@theme inline {
+  /* フォントファミリー */
+  --font-sans: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+  --font-serif: var(--font-noto-serif-jp), "Noto Serif JP", serif;
+  --font-mono: "Courier New", monospace;
+
+  /* カラーパレット（冒険テーマ） */
+  --color-adventure-bg:      #1A1A2E;
+  --color-adventure-card:    #FFFBF0;
+  --color-adventure-gold:    #FFD700;
+  --color-adventure-correct: #4CAF50;
+  --color-adventure-wrong:   #FF6B6B;
+  --color-adventure-kanji:   #1A1A1A;
+  --color-adventure-ruby:    #5C6BC0;
+
+  /* フォントサイズ */
+  --text-story:    22px;
+  --text-kanji-lg: 100px;
+  --text-ruby:     12px;
+  --text-btn:      18px;
+}
+
+/* ベーススタイル */
+body {
+  background-color: #1A1A2E;
+  color: #ffffff;
+  font-family: var(--font-sans);
+}
+
+/* タップ領域：最小 48px 確保 */
+button,
+[role="button"],
+a {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* スクロールバー（冒険テーマ） */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1A1A2E;
+}
+::-webkit-scrollbar-thumb {
+  background: #5C6BC0;
+  border-radius: 3px;
+}
+
+/* ============================================================
+   Ruby (ふりがな) — 注記
+   ============================================================
+   <ruby>/<rt> タグは Tailwind v4 の Preflight（* リセット）に破壊されるため、
+   RubyText.tsx では <span> + position:absolute 方式を採用。
+   ruby/rt/furigana-hidden の CSS はここでは不要。
+   ============================================================ */

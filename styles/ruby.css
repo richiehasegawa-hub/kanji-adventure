@@ -1,0 +1,51 @@
+/**
+ * ものがたり漢字アドベンチャー — ルビ（ふりがな）スタイル
+ * styles/ruby.css
+ *
+ * iOS Safari / Android Chrome 両対応
+ */
+
+/* ルビの基本スタイル */
+ruby {
+  ruby-align: center;
+  display: inline;
+}
+
+rt {
+  font-size: 0.55em;
+  color: #5C6BC0;           /* スレートブルー */
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  font-family: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+  /* iOS Safari でルビが重ならないよう line-height を明示 */
+  line-height: 1.2;
+}
+
+/* ふりがな ON */
+.rt-visible {
+  visibility: visible;
+}
+
+/* ふりがな OFF（スペース確保のため display:none にしない） */
+.rt-hidden {
+  visibility: hidden;
+}
+
+/* ルビコンテナ（行間を広げてルビが文字に重ならないように） */
+.ruby-container {
+  line-height: 2.2;
+  display: inline;
+}
+
+/* 物語テキスト専用ラッパー */
+.story-text {
+  font-size: 22px;
+  line-height: 2.4;
+  font-family: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+}
+
+/* 漢字カード用（大きい漢字に合わせたルビ） */
+.kanji-card ruby rt {
+  font-size: 0.3em;
+  letter-spacing: 0.1em;
+}
