@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ものがたり漢字アドベンチャー
 
-## Getting Started
+海外在住の日本人児童（5〜8歳）向け 漢字学習Webアプリ
 
-First, run the development server:
+## 公開URL
+
+- **Vercel（本番）**: https://kanji-adventure-richiehasegawa-hub.vercel.app （※Vercelが発行したURLに更新してください）
+- **GitHubリポジトリ**: https://github.com/richiehasegawa-hub/kanji-adventure
+
+## 機能概要
+
+- **STEP1** ものがたり — 漢字入りのお話を読む
+- **STEP2** 漢字カード — 読み・例文・おぼえかたを確認
+- **STEP3** クイズ — 4択問題（シャッフル・正誤フィードバック）
+- **STEP4** 手書き練習 — Canvas + Pointer Events（タッチ・ペン・マウス対応）
+- 進捗管理 — LocalStorage（Zustand persist）でエピソード完了を保存・バッジ表示
+- 全3ワールド・9エピソード・48漢字・27問
+
+## 技術スタック
+
+| 項目 | 内容 |
+|------|------|
+| フレームワーク | Next.js 16.2.6 (App Router) |
+| React | 19 |
+| TypeScript | 5.x |
+| スタイル | Tailwind CSS v4（@theme ベース） |
+| 状態管理 | Zustand v5 + persist（LocalStorage） |
+| ホスティング | Vercel（mainブランチへのpushで自動デプロイ） |
+
+## 開発環境
 
 ```bash
+cd ~/Desktop/ClaudeCoworkDesktop/Projects/kanji-adventure
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
+# → http://192.168.0.11:3000（iPhone/iPad — 同一WiFi）
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## TypeScriptチェック・デプロイ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# TypeScriptチェック
+npx tsc --noEmit
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# デプロイ（mainにpushすると自動デプロイ）
+git add -A
+git commit -m "コミットメッセージ"
+git push
+```
 
-## Learn More
+## 主要ファイル
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  page.tsx          ★ メイン画面（全5画面コンポーネント）
+data/
+  worlds.ts         ★ 全コンテンツデータ（3ワールド・9EP・48字・27問）
+stores/
+  progressStore.ts  学習進捗（Zustand persist・LocalStorage）
+  settingsStore.ts  設定（Zustand persist）
+types/
+  index.ts          型定義
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 注意事項
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm install` はMacのターミナルで実行
+- ルビは廃止確定。storyText は `漢字（よみ）` 形式のプレーンテキスト
+- 画面上に英語を表示しない。ボタン・ラベルはすべてひらがな
+- git push はユーザーが手動実行
