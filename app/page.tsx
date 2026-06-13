@@ -8,9 +8,10 @@
 
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { WORLDS, WorldData, EpisodeData, KanjiData, QuizQuestion } from "@/data/worlds";
 import { useProgressStore } from "@/stores/progressStore";
+import { speakKanji, speakText, stopSpeech, isSpeechSupported } from "@/lib/speech";
 
 // ============================================================
 // 型
@@ -517,6 +518,63 @@ function StoryScreen({
 // 漢字カード画面（STEP 2）
 // ============================================================
 
+function SpeakButton({
+  onSpeak,
+  color,
+}: {
+  onSpeak: () => void;
+  color: string;
+}) {
+  const [speaking, setSpeaking] = useState(false);
+  const supported = isSpeechSupported();
+
+  const handleClick = useCallback(() => {
+    if (speaking) {
+      stopSpeech();
+      setSpeaking(false);
+    } else {
+      onSpeak();
+      setSpeaking(true);
+      // 読み上げ終了を検知（最大10秒でリセット）
+      const timer = setTimeout(() => setSpeaking(false), 10000);
+      // speechSynthesis は onend を直接ポーリングで確認
+      const poll = setInterval(() => {
+        if (!window.speechSynthesis.speaking) {
+          setSpeaking(false);
+          clearInterval(poll);
+          clearTimeout(timer);
+        }
+      }, 300);
+    }
+  }, [speaking, onSpeak]);
+
+  if (!supported) return null;
+
+  return (
+    <button
+      onClick={handleClick}
+      aria-label="よみあげ"
+      style={{
+        width: "48px",
+        height: "48px",
+        borderRadius: "50%",
+        backgroundColor: speaking ? color : color + "22",
+        border: `2px solid ${color}`,
+        color: speaking ? "white" : color,
+        fontSize: "22px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        transition: "all 0.2s",
+      }}
+    >
+      {speaking ? "⏸" : "🔊"}
+    </button>
+  );
+}
+
 function KanjiCardScreen({
   world,
   episode,
@@ -622,16 +680,30 @@ function KanjiCardScreen({
             textAlign: "center",
           }}
         >
+          {/* 漢字文字 ＋ 読み上げボタン */}
           <div
             style={{
-              fontSize: "96px",
-              fontWeight: "bold",
-              color: world.cardColor,
-              lineHeight: 1.1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px",
               marginBottom: "8px",
             }}
           >
-            {kanji.character}
+            <div
+              style={{
+                fontSize: "96px",
+                fontWeight: "bold",
+                color: world.cardColor,
+                lineHeight: 1.1,
+              }}
+            >
+              {kanji.character}
+            </div>
+            <SpeakButton
+              color={world.cardColor}
+              onSpeak={() => speakKanji(kanji)}
+            />
           </div>
 
           <div
@@ -905,17 +977,32 @@ function QuizScreen({
             {quiz.targetKanji}
           </div>
 
-          <p
+          {/* 問題文 ＋ 読み上げボタン */}
+          <div
             style={{
-              fontSize: "20px",
-              color: "#333",
-              lineHeight: 1.7,
-              textAlign: "center",
-              margin: 0,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              gap: "12px",
             }}
           >
-            {quiz.question}
-          </p>
+            <p
+              style={{
+                fontSize: "20px",
+                color: "#333",
+                lineHeight: 1.7,
+                textAlign: "center",
+                margin: 0,
+                flex: 1,
+              }}
+            >
+              {quiz.question}
+            </p>
+            <SpeakButton
+              color={world.cardColor}
+              onSpeak={() => speakText(quiz.question)}
+            />
+          </div>
         </div>
 
         {quizPhase === "correct" && (
