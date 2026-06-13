@@ -12,6 +12,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { WORLDS, WorldData, EpisodeData, KanjiData, QuizQuestion } from "@/data/worlds";
 import { useProgressStore } from "@/stores/progressStore";
 import { speakKanji, speakText, stopSpeech, isSpeechSupported } from "@/lib/speech";
+import { Riku } from "@/components/ui/Riku";
 
 // ============================================================
 // 型
@@ -224,6 +225,11 @@ function WorldSelectScreen({
       >
         ものがたり漢字アドベンチャー
       </h1>
+
+      <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
+        <Riku mood="waving" size={88} />
+      </div>
+
       <p
         style={{
           fontSize: "13px",
@@ -1012,12 +1018,19 @@ function QuizScreen({
               border: "2px solid #4CAF50",
               borderRadius: "16px",
               padding: "16px 20px",
-              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
             }}
           >
-            <div style={{ fontSize: "32px", marginBottom: "4px" }}>⭐</div>
-            <div style={{ fontSize: "22px", fontWeight: "bold", color: "#2E7D32" }}>
-              せいかい！
+            <Riku mood="happy" size={72} />
+            <div>
+              <div style={{ fontSize: "24px", fontWeight: "bold", color: "#2E7D32" }}>
+                せいかい！ ⭐
+              </div>
+              <div style={{ fontSize: "14px", color: "#4CAF50", marginTop: "4px" }}>
+                すごい！よくわかったね！
+              </div>
             </div>
           </div>
         )}
@@ -1029,13 +1042,19 @@ function QuizScreen({
               border: "2px solid #FF9800",
               borderRadius: "16px",
               padding: "16px 20px",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "16px",
             }}
           >
-            <div style={{ fontSize: "18px", fontWeight: "bold", color: "#E65100", marginBottom: "6px" }}>
-              もういちど考えてみよう 💭
-            </div>
-            <div style={{ fontSize: "15px", color: "#555", lineHeight: 1.6 }}>
-              ヒント：{quiz.hint}
+            <Riku mood="worried" size={72} />
+            <div>
+              <div style={{ fontSize: "18px", fontWeight: "bold", color: "#E65100", marginBottom: "6px" }}>
+                もういちど考えてみよう 💭
+              </div>
+              <div style={{ fontSize: "15px", color: "#555", lineHeight: 1.6 }}>
+                ヒント：{quiz.hint}
+              </div>
             </div>
           </div>
         )}
@@ -1539,11 +1558,9 @@ function CompleteScreen({
         textAlign: "center",
       }}
     >
-      <div style={{ fontSize: "80px", marginBottom: "16px" }}>
-        {allCorrect ? "🌟" : "⭐"}
-      </div>
+      <Riku mood={allCorrect ? "excited" : "happy"} size={100} />
 
-      <div style={{ fontSize: "40px", marginBottom: "12px" }}>{episode.emoji}</div>
+      <div style={{ fontSize: "40px", margin: "8px 0 12px" }}>{episode.emoji}</div>
 
       <h1
         style={{
