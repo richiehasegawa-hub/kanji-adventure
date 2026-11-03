@@ -30,7 +30,7 @@
 ## 開発環境
 
 ```bash
-cd ~/Desktop/ClaudeCoworkDesktop/Projects/kanji-adventure
+cd ~/Desktop/ClaudeDesktop/Projects/kanji-adventure
 npm run dev
 # → http://localhost:3000
 # → http://192.168.0.11:3000（iPhone/iPad — 同一WiFi）
